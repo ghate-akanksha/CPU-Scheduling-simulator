@@ -7,3 +7,13 @@
 7. git push -u origin main
 8. git pull origin main --allow-unrelated-histories
 
+git add .
+git commit -m "Created frontend and backend folders"
+git push
+New-Item -ItemType Directory frontend
+New-Item -ItemType Directory backend
+npm run dev
+cd ..
+cd frontend /backend
+npm init -y
+git status 
