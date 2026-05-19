@@ -1,2 +1,9 @@
 1. git init
 2. git remote add origin url of repo
+3. git remote -v
+4. git add .
+5. git commit -m ""
+6. rename the branch git branch -M main
+7. git push -u origin main
+8. git pull origin main --allow-unrelated-histories
+
