@@ -1,0 +1,227 @@
+/* =========================
+   GLOBAL STABLE LAYOUT SYSTEM
+   (use in all projects)
+========================= */
+
+/* Prevent horizontal overflow issues */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Better box model consistency */
+* {
+  box-sizing: border-box;
+}
+
+/* =========================
+   ROOT LAYOUT STABILITY
+========================= */
+
+body {
+  margin: 0;
+  padding: 0;
+
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #020617;
+  color: #f8fafc;
+}
+
+/* =========================
+   APP WRAPPER (VERY IMPORTANT)
+   Wrap ALL pages inside this class
+========================= */
+
+.app-container {
+  width: 100%;
+
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 0 20px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   STICKY SAFE ZONES
+========================= */
+
+/* Sticky navbar safety */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Optional sticky sidebar safety */
+.sticky {
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
+}
+
+/* =========================
+   SECTION SPACING SYSTEM
+========================= */
+
+section {
+  margin-bottom: 30px;
+}
+
+/* =========================
+   CARD ALIGNMENT SYSTEM
+========================= */
+
+.card {
+  width: 100%;
+
+  border-radius: 16px;
+
+  overflow: hidden;
+}
+
+/* =========================
+   SCROLL CONTROL (IMPORTANT)
+========================= */
+
+/* Prevent weird scroll inside components */
+.scroll-x {
+  overflow-x: auto;
+}
+
+.scroll-y {
+  overflow-y: auto;
+}
+
+/* =========================
+   RESPONSIVE BASE FIX
+========================= */
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0 12px;
+  }
+}
+.algorithm-selector{
+
+  width:100%;
+}
+
+.algorithm-selector h2{
+
+  font-size:24px;
+
+  color:white;
+
+  margin-bottom:22px;
+
+  font-weight:700;
+}
+.algorithm-selector select{
+
+  width:100%;
+
+  padding:15px 16px;
+
+  border:none;
+
+  outline:none;
+
+  border-radius:14px;
+
+  background:#1e293b;
+
+  color:white;
+
+  font-size:16px;
+
+  cursor:pointer;
+
+  border:
+    1px solid rgba(255,255,255,0.08);
+
+  transition:0.3s ease;
+}
+
+.algorithm-selector select:hover{
+
+  border:
+    1px solid rgba(56,189,248,0.35);
+}
+
+.algorithm-selector select:focus{
+
+  border:
+    1px solid #38bdf8;
+
+  box-shadow:
+    0px 0px 12px rgba(56,189,248,0.35);
+}
+
+
+.algorithm-selector option{
+
+  background:#0f172a;
+
+  color:white;
+}
+.algorithm-info{
+
+  margin-top:24px;
+
+  padding:20px;
+
+  border-radius:16px;
+
+  background:
+    rgba(15,23,42,0.85);
+
+  border:
+    1px solid rgba(255,255,255,0.06);
+
+  box-shadow:
+    0px 6px 16px rgba(0,0,0,0.25);
+}
+.algorithm-info h4{
+
+  color:#38bdf8;
+
+  margin-bottom:12px;
+
+  font-size:18px;
+
+  font-weight:600;
+}
+.algorithm-info p{
+
+  color:#cbd5e1;
+
+  font-size:15px;
+
+  line-height:1.7;
+}
+@media(max-width:600px){
+
+  .algorithm-selector h2{
+
+    font-size:22px;
+  }
+  .algorithm-selector select{
+
+    font-size:15px;
+  }
+
+  .algorithm-info{
+
+    padding:18px;
+  }
+
+}
