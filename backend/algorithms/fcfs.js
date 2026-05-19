@@ -1,89 +1,61 @@
-// FCFS Scheduling Algorithm
-
 function fcfs(processes) {
 
-  // Current CPU execution time
   let currentTime = 0;
-
-  // Stores final calculated process data
   let result = [];
-
-  // Stores Gantt Chart blocks
   let ganttChart = [];
 
-  // Sort processes according to arrival time
-  processes.sort(
+  // Sort by arrival time (important for FCFS)
+  let sortedProcesses = [...processes].sort(
     (a, b) => a.arrivalTime - b.arrivalTime
   );
 
-  // Execute processes one by one
-  processes.forEach((process) => {
+  for (let i = 0; i < sortedProcesses.length; i++) {
 
-    // Handle CPU idle condition
+    let process = sortedProcesses[i];
+
+    let pid = process.pid || `P${i + 1}`;
+
+    // CPU IDLE TIME HANDLING
     if (currentTime < process.arrivalTime) {
+
+      ganttChart.push({
+        pid: "IDLE",
+        startTime: currentTime,
+        endTime: process.arrivalTime
+      });
+
       currentTime = process.arrivalTime;
     }
 
-    // Process execution starts here
     let startTime = currentTime;
+    let completionTime = startTime + process.burstTime;
 
-    // Completion Time
-    let completionTime =
-      startTime + process.burstTime;
+    let turnaroundTime = completionTime - process.arrivalTime;
+    let waitingTime = turnaroundTime - process.burstTime;
 
-    // Turnaround Time
-    let turnaroundTime =
-      completionTime - process.arrivalTime;
-
-    // Waiting Time
-    let waitingTime =
-      turnaroundTime - process.burstTime;
-
-    // Store final process result
     result.push({
-
-      pid: process.pid,
-
+      pid,
       arrivalTime: process.arrivalTime,
-
       burstTime: process.burstTime,
-
       startTime,
-
       completionTime,
-
       turnaroundTime,
-
       waitingTime
-
     });
 
-    // Store Gantt Chart data
     ganttChart.push({
-
-      pid: process.pid,
-
+      pid,
       startTime,
-
       endTime: completionTime
-
     });
 
-    // Move CPU time forward
     currentTime = completionTime;
+  }
 
-  });
-
-  // Return final output
   return {
-
     result,
-
     ganttChart
-
   };
-
 }
 
-// Export FCFS function
 module.exports = fcfs;
