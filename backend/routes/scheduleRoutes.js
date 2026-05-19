@@ -7,8 +7,14 @@ const fcfs = require("../algorithms/fcfs");
 // Import SJF algorithm
 const sjf = require("../algorithms/sjf");
 
-// Import SRJF algorithm (your file name)
+// Import SRJF algorithm 
 const srjf = require("../algorithms/srjf");
+
+// import round robin algorithm
+const roundRobin = require("../algorithms/roundRobin");
+
+// import  priority scheduling algorithm
+const priorityScheduling = require("../algorithms/priorityScheduling");
 
 
 // ================= FCFS =================
@@ -100,6 +106,65 @@ router.post("/srjf", (req, res) => {
   }
 });
 
+// ====== round robin ========
+router.post("/rr", (req, res) => {
+  try {
+
+    const { processes, quantum } = req.body;
+
+    if (!processes || processes.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Processes required"
+      });
+    }
+
+    const output = roundRobin(processes, quantum || 2);
+
+    return res.json({
+      success: true,
+      algorithm: "Round Robin",
+      ...output
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Priority Route
+router.post("/priority", (req, res) => {
+
+  try {
+
+    const { processes } = req.body;
+
+    if (!processes || processes.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Processes required"
+      });
+    }
+
+    const output = priorityScheduling(processes);
+
+    return res.json({
+      success: true,
+      algorithm: "Priority Scheduling",
+      ...output
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+
+});
 
 // ================= EXPORT =================
 module.exports = router;
