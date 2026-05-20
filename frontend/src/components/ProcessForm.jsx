@@ -6,13 +6,21 @@ const ProcessForm = ({
   onSimulate
 }) => {
 
-  // =========================
-  // STATES
-  // =========================
 
   const [processes, setProcesses] =
     useState([]);
 
+  // Selected Scheduling Algorithm
+  const [selectedAlgorithm,
+    setSelectedAlgorithm] =
+    useState("fcfs");
+
+  // Time Quantum for Round Robin
+  const [timeQuantum,
+    setTimeQuantum] =
+    useState("");
+
+  // Single Process State
   const [process, setProcess] =
     useState({
       pid: "",
@@ -22,25 +30,27 @@ const ProcessForm = ({
     });
 
   // =========================
-  // HANDLE CHANGE
+  // HANDLE INPUT CHANGE
   // =========================
 
   const handleChange = (e) => {
 
     setProcess({
+
       ...process,
+
       [e.target.name]:
         e.target.value
+
     });
 
   };
 
-  // =========================
-  // ADD PROCESS
-  // =========================
+  
 
   const addProcess = () => {
 
+    // Basic Validation
     if (
       process.pid === "" ||
       process.arrivalTime === "" ||
@@ -48,12 +58,29 @@ const ProcessForm = ({
     ) {
 
       alert(
-        "Please fill all fields"
+        "Please fill all required fields"
       );
 
       return;
+
     }
 
+    // Priority Validation
+    if (
+      selectedAlgorithm ===
+        "priority" &&
+      process.priority === ""
+    ) {
+
+      alert(
+        "Please enter priority"
+      );
+
+      return;
+
+    }
+
+    // Create New Process Object
     const newProcess = {
 
       pid: process.pid,
@@ -64,22 +91,33 @@ const ProcessForm = ({
       burstTime:
         Number(process.burstTime),
 
-      priority:
-        Number(process.priority)
+      // Add priority only for
+      // Priority Scheduling
+
+      ...(selectedAlgorithm ===
+        "priority" && {
+
+          priority:
+            Number(process.priority)
+
+      })
+
     };
 
+    // Add process to array
     setProcesses([
       ...processes,
       newProcess
     ]);
 
-    // RESET FORM
-
+    // Reset form
     setProcess({
+
       pid: "",
       arrivalTime: "",
       burstTime: "",
       priority: ""
+
     });
 
   };
@@ -99,9 +137,6 @@ const ProcessForm = ({
 
   };
 
-  // =========================
-  // RUN SIMULATION
-  // =========================
 
   const runSimulation = () => {
 
@@ -112,25 +147,95 @@ const ProcessForm = ({
       );
 
       return;
+
     }
 
-    onSimulate(processes);
+    // Round Robin Validation
+    if (
+      selectedAlgorithm ===
+        "rr" &&
+      timeQuantum === ""
+    ) {
+
+      alert(
+        "Please enter Time Quantum"
+      );
+
+      return;
+
+    }
+
+    // Send Data to Parent Component
+    onSimulate({
+
+      algorithm:
+        selectedAlgorithm,
+
+      timeQuantum:
+        Number(timeQuantum),
+
+      processes
+
+    });
 
   };
+
+  
 
   return (
 
     <div className="process-form">
 
       <h2>
-        Add Process
+        CPU Scheduling Simulator
       </h2>
 
-      {/* ========================= */}
-      {/* INPUTS */}
-      {/* ========================= */}
+      
+
+      <div className="algorithm-select">
+
+        <label>
+          Select Algorithm
+        </label>
+
+        <select
+          value={selectedAlgorithm}
+          onChange={(e) =>
+            setSelectedAlgorithm(
+              e.target.value
+            )
+          }
+        >
+
+          <option value="fcfs">
+            FCFS
+          </option>
+
+          <option value="sjf">
+            SJF
+          </option>
+
+          <option value="srtf">
+            SRTF
+          </option>
+
+          <option value="rr">
+            Round Robin
+          </option>
+
+          <option value="priority">
+            Priority Scheduling
+          </option>
+
+        </select>
+
+      </div>
+
+      
 
       <div className="input-group">
+
+        {/* PID */}
 
         <input
           type="text"
@@ -140,6 +245,8 @@ const ProcessForm = ({
           onChange={handleChange}
         />
 
+        {/* Arrival Time */}
+
         <input
           type="number"
           name="arrivalTime"
@@ -147,6 +254,8 @@ const ProcessForm = ({
           value={process.arrivalTime}
           onChange={handleChange}
         />
+
+        {/* Burst Time */}
 
         <input
           type="number"
@@ -156,19 +265,50 @@ const ProcessForm = ({
           onChange={handleChange}
         />
 
-        <input
-          type="number"
-          name="priority"
-          placeholder="Priority"
-          value={process.priority}
-          onChange={handleChange}
-        />
+        {/* Priority Field */}
+
+        {
+          selectedAlgorithm ===
+            "priority" && (
+
+            <input
+              type="number"
+              name="priority"
+              placeholder="Priority"
+              value={process.priority}
+              onChange={handleChange}
+            />
+
+          )
+        }
 
       </div>
 
-      {/* ========================= */}
-      {/* BUTTONS */}
-      {/* ========================= */}
+      
+
+      {
+        selectedAlgorithm ===
+          "rr" && (
+
+          <div className="rr-input">
+
+            <input
+              type="number"
+              placeholder="Time Quantum"
+              value={timeQuantum}
+              onChange={(e) =>
+                setTimeQuantum(
+                  e.target.value
+                )
+              }
+            />
+
+          </div>
+
+        )
+      }
+
+      
 
       <div className="btn-group">
 
@@ -188,9 +328,7 @@ const ProcessForm = ({
 
       </div>
 
-      {/* ========================= */}
-      {/* PROCESS TABLE */}
-      {/* ========================= */}
+      
 
       {
         processes.length > 0 && (
@@ -207,7 +345,9 @@ const ProcessForm = ({
 
                 <tr>
 
-                  <th>PID</th>
+                  <th>
+                    PID
+                  </th>
 
                   <th>
                     Arrival
@@ -217,9 +357,18 @@ const ProcessForm = ({
                     Burst
                   </th>
 
-                  <th>
-                    Priority
-                  </th>
+                  {/* Dynamic Priority Column */}
+
+                  {
+                    selectedAlgorithm ===
+                      "priority" && (
+
+                      <th>
+                        Priority
+                      </th>
+
+                    )
+                  }
 
                   <th>
                     Action
@@ -253,9 +402,18 @@ const ProcessForm = ({
                           }
                         </td>
 
-                        <td>
-                          {p.priority}
-                        </td>
+                        {/* Dynamic Priority Data */}
+
+                        {
+                          selectedAlgorithm ===
+                            "priority" && (
+
+                            <td>
+                              {p.priority}
+                            </td>
+
+                          )
+                        }
 
                         <td>
 

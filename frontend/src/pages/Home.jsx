@@ -1,6 +1,7 @@
 import "./Home.css";
 
 import { useState } from "react";
+
 import axios from "axios";
 
 import ProcessForm from "../components/ProcessForm";
@@ -11,7 +12,7 @@ import GanttChart from "../components/GanttChart";
 const Home = () => {
 
   // =========================
-  // States
+  // STATES
   // =========================
 
   const [algorithm, setAlgorithm] =
@@ -27,11 +28,11 @@ const Home = () => {
     useState("");
 
   // =========================
-  // Run Simulation
+  // RUN SIMULATION
   // =========================
 
   const handleSimulation =
-    async (processes) => {
+    async (simulationData) => {
 
       try {
 
@@ -41,17 +42,25 @@ const Home = () => {
 
         setResult(null);
 
+        // =========================
+        // API CALL
+        // =========================
+
         const response =
           await axios.post(
-            `http://localhost:5000/api/schedule/${algorithm}`,
-            {
-              processes
-            }
+
+            `http://localhost:5000/api/schedule/${simulationData.algorithm}`,
+
+            simulationData
+
           );
 
+        // Store Result
         setResult(response.data);
 
-      } catch (err) {
+      }
+
+      catch (err) {
 
         console.log(err);
 
@@ -59,7 +68,9 @@ const Home = () => {
           "Failed to run simulation"
         );
 
-      } finally {
+      }
+
+      finally {
 
         setLoading(false);
 
@@ -67,50 +78,64 @@ const Home = () => {
 
     };
 
+  // =========================
+  // JSX
+  // =========================
+
   return (
 
     <div className="home">
 
       {/* ========================= */}
-      {/* Navbar */}
+      {/* NAVBAR */}
       {/* ========================= */}
 
       <div className="navbar">
 
         <h1 className="logo">
+
           CPU Scheduling Simulator
+
         </h1>
 
       </div>
 
       {/* ========================= */}
-      {/* Hero Section */}
+      {/* HERO SECTION */}
       {/* ========================= */}
 
       <div className="hero">
 
         <h2>
+
           Interactive Operating System
           Scheduling Visualizer
+
         </h2>
 
         <p>
+
           Simulate FCFS, SJF, SRTF,
           Round Robin and Priority
           Scheduling Algorithms.
+
         </p>
 
       </div>
 
       {/* ========================= */}
-      {/* Main Layout */}
+      {/* MAIN LAYOUT */}
       {/* ========================= */}
 
       <div className="main-container">
 
-        {/* Left Panel */}
+        {/* ========================= */}
+        {/* LEFT PANEL */}
+        {/* ========================= */}
 
         <div className="left-panel">
+
+          {/* Algorithm Selector */}
 
           <div className="card">
 
@@ -121,9 +146,12 @@ const Home = () => {
 
           </div>
 
+          {/* Process Form */}
+
           <div className="card">
 
             <ProcessForm
+              algorithm={algorithm}
               onSimulate={
                 handleSimulation
               }
@@ -133,9 +161,13 @@ const Home = () => {
 
         </div>
 
-        {/* Right Panel */}
+        {/* ========================= */}
+        {/* RIGHT PANEL */}
+        {/* ========================= */}
 
         <div className="right-panel">
+
+          {/* Loading */}
 
           {
             loading && (
@@ -149,6 +181,8 @@ const Home = () => {
             )
           }
 
+          {/* Error */}
+
           {
             error && (
 
@@ -161,9 +195,14 @@ const Home = () => {
             )
           }
 
+          {/* Result */}
+
           {
             result && (
+
               <>
+
+                {/* Metrics Table */}
 
                 <div className="card">
 
@@ -172,6 +211,8 @@ const Home = () => {
                   />
 
                 </div>
+
+                {/* Gantt Chart */}
 
                 <div className="card">
 
@@ -184,6 +225,7 @@ const Home = () => {
                 </div>
 
               </>
+
             )
           }
 
@@ -192,6 +234,7 @@ const Home = () => {
       </div>
 
     </div>
+
   );
 };
 
