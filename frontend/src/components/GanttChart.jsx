@@ -1,12 +1,31 @@
 import "./GanttChart.css";
 
 const GanttChart = ({
-  gantt
+  gantt = []
 }) => {
 
+  if (gantt.length === 0) {
+
+    return (
+
+      <div className="gantt-container">
+
+        <h2>
+          Gantt Chart
+        </h2>
+
+        <p>
+          No Gantt Chart Available
+        </p>
+
+      </div>
+
+    );
+
+  }
 
   const totalTime =
-    gantt[gantt.length - 1]?.endTime || 0;
+    gantt[gantt.length - 1].endTime;
 
   return (
 
@@ -39,15 +58,11 @@ const GanttChart = ({
                   }}
                 >
 
-                  {/* Process Name */}
-
                   <div className="process-name">
 
                     {item.pid}
 
                   </div>
-
-                  {/* Timeline */}
 
                   <div className="timeline">
 
@@ -64,6 +79,7 @@ const GanttChart = ({
                 </div>
 
               );
+
             }
           )
         }
@@ -71,7 +87,9 @@ const GanttChart = ({
       </div>
 
     </div>
+
   );
+
 };
 
 export default GanttChart;
