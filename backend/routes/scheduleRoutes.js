@@ -15,6 +15,9 @@ const roundRobin = require("../algorithms/roundRobin");
 
 // import  priority scheduling algorithm
 const priorityScheduling = require("../algorithms/priorityScheduling");
+// import compare algorithms
+const compareAlgorithms =
+  require("../services/compareAlgorithms");
 
 
 // ================= FCFS =================
@@ -165,6 +168,58 @@ router.post("/priority", (req, res) => {
   }
 
 });
+
+router.post(
+  "/compare",
+
+  (req, res) => {
+
+    try {
+
+      const { processes } =
+        req.body;
+
+      if (
+        !processes ||
+        processes.length === 0
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Processes required"
+
+        });
+
+      }
+
+      const result =
+        compareAlgorithms(
+          processes
+        );
+
+      return res.json(result);
+
+    }
+
+    catch (error) {
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message
+
+      });
+
+    }
+
+  }
+
+);
 
 // ================= EXPORT =================
 module.exports = router;

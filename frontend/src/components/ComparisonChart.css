@@ -1,0 +1,19 @@
+.chart-container {
+
+  width: 100%;
+
+}
+
+.chart-title {
+
+  margin-bottom: 20px;
+
+  font-size: 24px;
+
+}
+
+.recharts-wrapper {
+
+  margin: auto;
+
+}

@@ -8,7 +8,10 @@ import ProcessForm from "../components/ProcessForm";
 import AlgorithmSelector from "../components/AlgorithmSelector";
 import MetricsTable from "../components/MetricsTable";
 import GanttChart from "../components/GanttChart";
-
+import ComparisonTable
+from "../components/ComparisonTable";
+import ComparisonChart
+from "../components/ComparisonChart";
 const Home = () => {
 
   // =========================
@@ -27,6 +30,31 @@ const Home = () => {
   const [error, setError] =
     useState("");
 
+  // Store Process Data Globally
+
+  const [processData,
+    setProcessData] =
+    useState([]);
+
+  // Comparison Result
+
+  const [comparisonResult,
+    setComparisonResult] =
+    useState(null);
+
+  // Best Algorithm
+
+  const [bestAlgorithm,
+    setBestAlgorithm] =
+    useState("");
+
+  // Round Robin Time Quantum
+  // for comparison feature
+
+  const [timeQuantum,
+    setTimeQuantum] =
+    useState(2);
+
   // =========================
   // RUN SIMULATION
   // =========================
@@ -43,6 +71,28 @@ const Home = () => {
         setResult(null);
 
         // =========================
+        // STORE PROCESS DATA
+        // =========================
+
+        setProcessData(
+          simulationData.processes
+        );
+
+        // =========================
+        // STORE RR QUANTUM
+        // =========================
+
+        if (
+          simulationData.timeQuantum
+        ) {
+
+          setTimeQuantum(
+            simulationData.timeQuantum
+          );
+
+        }
+
+        // =========================
         // API CALL
         // =========================
 
@@ -55,7 +105,10 @@ const Home = () => {
 
           );
 
-        // Store Result
+        // =========================
+        // STORE RESULT
+        // =========================
+
         setResult(response.data);
 
       }
@@ -66,6 +119,76 @@ const Home = () => {
 
         setError(
           "Failed to run simulation"
+        );
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+  // =========================
+  // COMPARE ALGORITHMS
+  // =========================
+
+  const compareAlgorithms =
+    async () => {
+
+      try {
+
+        setLoading(true);
+
+        setError("");
+
+        setComparisonResult(null);
+
+        // =========================
+        // COMPARE API CALL
+        // =========================
+
+        const response =
+          await axios.post(
+
+            "http://localhost:5000/api/schedule/compare",
+
+            {
+              processes:
+                processData,
+
+              timeQuantum:
+                timeQuantum
+            }
+
+          );
+
+        // =========================
+        // STORE COMPARISON RESULT
+        // =========================
+
+        setComparisonResult(
+          response.data.comparisons
+        );
+
+        // =========================
+        // STORE BEST ALGORITHM
+        // =========================
+
+        setBestAlgorithm(
+          response.data.bestAlgorithm
+        );
+
+      }
+
+      catch (error) {
+
+        console.log(error);
+
+        setError(
+          "Comparison failed"
         );
 
       }
@@ -115,7 +238,7 @@ const Home = () => {
 
         <p>
 
-          Simulate FCFS, SJF, SRTF,
+          Simulate FCFS, SJF, SRJF,
           Round Robin and Priority
           Scheduling Algorithms.
 
@@ -159,6 +282,76 @@ const Home = () => {
 
           </div>
 
+          {/* ========================= */}
+          {/* COMPARISON SETTINGS */}
+          {/* ========================= */}
+
+          {
+            processData.length > 0 && (
+
+              <div className="card">
+
+                <h3>
+
+                  Comparison Settings
+
+                </h3>
+
+                <label>
+
+                  Round Robin Time Quantum
+
+                </label>
+
+                <input
+                  type="number"
+
+                  min="1"
+
+                  value={
+                    timeQuantum
+                  }
+
+                  onChange={(e) =>
+                    setTimeQuantum(
+                      Number(
+                        e.target.value
+                      )
+                    )
+                  }
+                />
+
+              </div>
+
+            )
+          }
+
+          {/* ========================= */}
+          {/* COMPARE BUTTON */}
+          {/* ========================= */}
+
+         {
+  processData.length > 0 && (
+
+    <div className="compare-section">
+
+      <button
+        className="compare-btn"
+
+        onClick={
+          compareAlgorithms
+        }
+      >
+
+        Compare Algorithms
+
+      </button>
+
+    </div>
+
+  )
+}
+
         </div>
 
         {/* ========================= */}
@@ -195,7 +388,9 @@ const Home = () => {
             )
           }
 
-          {/* Result */}
+          {/* ========================= */}
+          {/* RESULT */}
+          {/* ========================= */}
 
           {
             result && (
@@ -229,6 +424,49 @@ const Home = () => {
             )
           }
 
+          
+{/* ========================= */}
+{/* COMPARISON RESULT */}
+{/* ========================= */}
+
+{
+  comparisonResult && (
+
+    <>
+
+      {/* Comparison Table */}
+
+      <div className="card">
+
+        <ComparisonTable
+          comparisonResult={
+            comparisonResult
+          }
+
+          bestAlgorithm={
+            bestAlgorithm
+          }
+        />
+
+      </div>
+
+      {/* Comparison Chart */}
+
+      <div className="card">
+
+        <ComparisonChart
+          comparisonResult={
+            comparisonResult
+          }
+        />
+
+      </div>
+
+    </>
+
+  )
+}
+
         </div>
 
       </div>
@@ -236,6 +474,7 @@ const Home = () => {
     </div>
 
   );
+
 };
 
 export default Home;

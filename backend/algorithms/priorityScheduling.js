@@ -2,84 +2,171 @@
 
 function priorityScheduling(processes) {
 
+  console.log("PRIORITY START");
+
   let n = processes.length;
+
   let currentTime = 0;
+
   let completed = 0;
 
-  let isCompleted = new Array(n).fill(false);
+  let isCompleted =
+    new Array(n).fill(false);
 
   let result = [];
+
   let ganttChart = [];
+
+  let safety = 0;
 
   while (completed !== n) {
 
-    let idx = -1;
-    let highestPriority = Infinity;
+    safety++;
 
-    // Find highest priority process (lowest number = highest priority)
+    // SAFETY CHECK
+
+    if (safety > 1000) {
+
+      console.log(
+        "INFINITE LOOP DETECTED"
+      );
+
+      break;
+    }
+
+    let idx = -1;
+
+    let highestPriority =
+      Infinity;
+
+    // FIND PROCESS
+
     for (let i = 0; i < n; i++) {
 
       if (
-        processes[i].arrivalTime <= currentTime &&
+
+        processes[i].arrivalTime
+        <= currentTime &&
+
         !isCompleted[i]
+
       ) {
 
-        if (processes[i].priority < highestPriority) {
-          highestPriority = processes[i].priority;
+        // DEFAULT PRIORITY
+
+        let priority =
+          Number(
+            processes[i].priority
+          ) || 999;
+
+        if (
+          priority <
+          highestPriority
+        ) {
+
+          highestPriority =
+            priority;
+
           idx = i;
         }
       }
     }
 
     // CPU IDLE
+
     if (idx === -1) {
+
       currentTime++;
 
       ganttChart.push({
+
         pid: "IDLE",
-        startTime: currentTime - 1,
-        endTime: currentTime
+
+        startTime:
+          currentTime - 1,
+
+        endTime:
+          currentTime
+
       });
 
       continue;
     }
 
-    let process = processes[idx];
+    let process =
+      processes[idx];
 
-    let pid = process.pid || `P${idx + 1}`;
+    let pid =
+      process.pid ||
+      `P${idx + 1}`;
 
-    let startTime = currentTime;
-    let completionTime = startTime + process.burstTime;
+    let startTime =
+      currentTime;
 
-    let turnaroundTime = completionTime - process.arrivalTime;
-    let waitingTime = turnaroundTime - process.burstTime;
+    let completionTime =
+      startTime +
+      process.burstTime;
+
+    let turnaroundTime =
+      completionTime -
+      process.arrivalTime;
+
+    let waitingTime =
+      turnaroundTime -
+      process.burstTime;
 
     result.push({
+
       pid,
-      arrivalTime: process.arrivalTime,
-      burstTime: process.burstTime,
-      priority: process.priority,
+
+      arrivalTime:
+        process.arrivalTime,
+
+      burstTime:
+        process.burstTime,
+
+      priority:
+        process.priority,
+
       startTime,
+
       completionTime,
+
       turnaroundTime,
+
       waitingTime
+
     });
 
     ganttChart.push({
+
       pid,
+
       startTime,
-      endTime: completionTime
+
+      endTime:
+        completionTime
+
     });
 
-    currentTime = completionTime;
+    currentTime =
+      completionTime;
+
     isCompleted[idx] = true;
+
     completed++;
   }
 
+  console.log("PRIORITY DONE");
+
   return {
+
     result,
+
     ganttChart
+
   };
 }
 
-module.exports = priorityScheduling;
+module.exports =
+  priorityScheduling;
