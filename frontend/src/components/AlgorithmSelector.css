@@ -1,23 +1,16 @@
-/* =========================
-   GLOBAL STABLE LAYOUT SYSTEM
-   (use in all projects)
-========================= */
 
-/* Prevent horizontal overflow issues */
 html, body {
   width: 100%;
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
-/* Better box model consistency */
+
 * {
   box-sizing: border-box;
 }
 
-/* =========================
-   ROOT LAYOUT STABILITY
-========================= */
+
 
 body {
   margin: 0;
@@ -32,10 +25,7 @@ body {
   color: #f8fafc;
 }
 
-/* =========================
-   APP WRAPPER (VERY IMPORTANT)
-   Wrap ALL pages inside this class
-========================= */
+
 
 .app-container {
   width: 100%;
@@ -50,35 +40,27 @@ body {
   flex-direction: column;
 }
 
-/* =========================
-   STICKY SAFE ZONES
-========================= */
 
-/* Sticky navbar safety */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 1000;
 }
 
-/* Optional sticky sidebar safety */
+
 .sticky {
   position: sticky;
   top: 100px;
   align-self: flex-start;
 }
 
-/* =========================
-   SECTION SPACING SYSTEM
-========================= */
+
 
 section {
   margin-bottom: 30px;
 }
 
-/* =========================
-   CARD ALIGNMENT SYSTEM
-========================= */
+
 
 .card {
   width: 100%;
@@ -88,11 +70,7 @@ section {
   overflow: hidden;
 }
 
-/* =========================
-   SCROLL CONTROL (IMPORTANT)
-========================= */
 
-/* Prevent weird scroll inside components */
 .scroll-x {
   overflow-x: auto;
 }
@@ -101,9 +79,7 @@ section {
   overflow-y: auto;
 }
 
-/* =========================
-   RESPONSIVE BASE FIX
-========================= */
+
 
 @media (max-width: 768px) {
   .app-container {

@@ -14,15 +14,11 @@ import ComparisonChart from "../components/ComparisonChart";
 
 const Home = () => {
 
-  // =========================
-  // NAVIGATION
-  // =========================
+  
 
   const navigate = useNavigate();
 
-  // =========================
-  // STATES
-  // =========================
+ 
 
   const [algorithm, setAlgorithm] =
     useState("fcfs");
@@ -52,9 +48,7 @@ const Home = () => {
     setTimeQuantum] =
     useState(2);
 
-  // =========================
-  // RUN SIMULATION
-  // =========================
+  
 
   const handleSimulation =
     async (simulationData) => {
@@ -67,13 +61,13 @@ const Home = () => {
 
         setResult(null);
 
-        // Store process data
+    
 
         setProcessData(
           simulationData.processes
         );
 
-        // Store RR Time Quantum
+    
 
         if (
           simulationData.timeQuantum
@@ -120,9 +114,7 @@ const Home = () => {
 
     };
 
-  // =========================
-  // COMPARE ALGORITHMS
-  // =========================
+  
 
   const compareAlgorithms =
     async () => {
@@ -178,9 +170,7 @@ const Home = () => {
 
     };
 
-  // =========================
-  // START LIVE SIMULATION
-  // =========================
+  
 
   const startLiveSimulation =
     () => {
@@ -219,17 +209,13 @@ const Home = () => {
 
     };
 
-  // =========================
-  // JSX
-  // =========================
+  
 
   return (
 
     <div className="home">
 
-      {/* ========================= */}
-      {/* NAVBAR */}
-      {/* ========================= */}
+      
 
       <div className="navbar">
 
@@ -241,9 +227,6 @@ const Home = () => {
 
       </div>
 
-      {/* ========================= */}
-      {/* HERO SECTION */}
-      {/* ========================= */}
 
       <div className="hero">
 
@@ -265,15 +248,10 @@ const Home = () => {
 
       </div>
 
-      {/* ========================= */}
-      {/* MAIN CONTAINER */}
-      {/* ========================= */}
+     
 
       <div className="main-container">
 
-        {/* ========================= */}
-        {/* LEFT PANEL */}
-        {/* ========================= */}
 
         <div className="left-panel">
 
@@ -374,9 +352,7 @@ const Home = () => {
 
         </div>
 
-        {/* ========================= */}
-        {/* RIGHT PANEL */}
-        {/* ========================= */}
+        
 
         <div className="right-panel">
 
@@ -408,9 +384,6 @@ const Home = () => {
             )
           }
 
-          {/* ========================= */}
-          {/* RESULT */}
-          {/* ========================= */}
 
           {
             result && (
@@ -464,9 +437,7 @@ const Home = () => {
             )
           }
 
-          {/* ========================= */}
-          {/* COMPARISON */}
-          {/* ========================= */}
+          
 
           {
             comparisonResult && (

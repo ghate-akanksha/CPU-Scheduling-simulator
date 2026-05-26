@@ -32,9 +32,6 @@ from "../components/ProcessTable";
 export default function
 LiveSimulation() {
 
-  // =========================
-  // NAVIGATION
-  // =========================
 
   const location =
     useLocation();
@@ -42,9 +39,7 @@ LiveSimulation() {
   const navigate =
     useNavigate();
 
-  // =========================
-  // GET DATA FROM HOME
-  // =========================
+  
 
   const {
 
@@ -56,9 +51,7 @@ LiveSimulation() {
 
   } = location.state || {};
 
-  // =========================
-  // STATES
-  // =========================
+
 
   const [timeline,
     setTimeline] =
@@ -92,9 +85,7 @@ LiveSimulation() {
     setError] =
     useState("");
 
-  // =========================
-  // API MAP
-  // =========================
+
 
   const apiMap = {
 
@@ -115,9 +106,7 @@ LiveSimulation() {
 
   };
 
-  // =========================
-  // FETCH TIMELINE
-  // =========================
+  
 
   useEffect(() => {
 
@@ -138,9 +127,7 @@ LiveSimulation() {
 
   }, []);
 
-  // =========================
-  // FETCH FUNCTION
-  // =========================
+
 
   const fetchTimeline =
     async () => {
@@ -223,9 +210,6 @@ LiveSimulation() {
 
     };
 
-  // =========================
-  // LIVE ENGINE
-  // =========================
 
   useEffect(() => {
 
@@ -290,9 +274,7 @@ LiveSimulation() {
 
   ]);
 
-  // =========================
-  // CONTROLS
-  // =========================
+
 
   const handleStart = () => {
 
@@ -318,17 +300,13 @@ LiveSimulation() {
 
   };
 
-  // =========================
-  // JSX
-  // =========================
+  
 
   return (
 
     <div className="live-container">
 
-      {/* ========================= */}
-      {/* TITLE */}
-      {/* ========================= */}
+     
 
       <h1 className="title">
 
@@ -337,9 +315,7 @@ LiveSimulation() {
 
       </h1>
 
-      {/* ========================= */}
-      {/* ALGORITHM */}
-      {/* ========================= */}
+     
 
       <h2 className="algo-name">
 
@@ -352,9 +328,7 @@ LiveSimulation() {
 
       </h2>
 
-      {/* ========================= */}
-      {/* CONTROLS */}
-      {/* ========================= */}
+      
 
       <SimulationControls
 
@@ -374,9 +348,7 @@ LiveSimulation() {
 
       />
 
-      {/* ========================= */}
-      {/* LOADING */}
-      {/* ========================= */}
+      
 
       {
         loading && (
@@ -390,9 +362,7 @@ LiveSimulation() {
         )
       }
 
-      {/* ========================= */}
-      {/* ERROR */}
-      {/* ========================= */}
+     
 
       {
         error && (
@@ -406,9 +376,7 @@ LiveSimulation() {
         )
       }
 
-      {/* ========================= */}
-      {/* TOP SECTION */}
-      {/* ========================= */}
+      
 
       <div className="top-section">
 
@@ -419,7 +387,7 @@ LiveSimulation() {
             {currentState}
         />
 
-        {/* READY QUEUE */}
+        
 
         <ReadyQueue
           currentState=
@@ -428,17 +396,13 @@ LiveSimulation() {
 
       </div>
 
-      {/* ========================= */}
-      {/* GANTT */}
-      {/* ========================= */}
+      
 
       <LiveGantt
         gantt={gantt}
       />
 
-      {/* ========================= */}
-      {/* TABLE */}
-      {/* ========================= */}
+      
 
       <ProcessTable
         currentState=
