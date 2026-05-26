@@ -1,0 +1,211 @@
+.queue-section {
+
+  width: 100%;
+
+  background: #111827;
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+  margin-top: 20px;
+
+  border: 2px solid #1f2937;
+
+  box-shadow:
+    0 0 20px rgba(59, 130, 246, 0.15);
+
+}
+
+.queue-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 25px;
+
+}
+
+.queue-header h2 {
+
+  color: white;
+
+  font-size: 28px;
+
+  letter-spacing: 1px;
+
+}
+
+.queue-count {
+
+  background: #2563eb;
+
+  color: white;
+
+  padding: 8px 16px;
+
+  border-radius: 20px;
+
+  font-size: 14px;
+
+  font-weight: bold;
+
+}
+
+.queue-container {
+
+  display: flex;
+
+  gap: 18px;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  min-height: 120px;
+
+}
+
+.queue-item {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  animation: slideIn 0.4s ease;
+
+  transition: 0.3s ease;
+
+}
+
+.queue-item:hover {
+
+  transform: translateY(-6px);
+
+}
+
+.queue-circle {
+
+  width: 75px;
+
+  height: 75px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    #3b82f6,
+    #06b6d4
+  );
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  color: white;
+
+  font-size: 24px;
+
+  font-weight: bold;
+
+  box-shadow:
+    0 0 18px rgba(59, 130, 246, 0.4);
+
+}
+
+.queue-label {
+
+  margin-top: 10px;
+
+  color: #d1d5db;
+
+  font-size: 14px;
+
+  letter-spacing: 1px;
+
+}
+
+.empty-queue {
+
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  padding: 20px;
+
+}
+
+.empty-queue h3 {
+
+  color: #ef4444;
+
+  font-size: 28px;
+
+  margin-bottom: 10px;
+
+}
+
+.empty-queue p {
+
+  color: #9ca3af;
+
+  font-size: 16px;
+
+}
+
+@keyframes slideIn {
+
+  from {
+
+    opacity: 0;
+
+    transform: translateX(-30px);
+
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform: translateX(0);
+
+  }
+
+}
+
+/* RESPONSIVE */
+
+@media screen and (max-width: 768px) {
+
+  .queue-container {
+
+    justify-content: center;
+
+  }
+
+  .queue-circle {
+
+    width: 60px;
+
+    height: 60px;
+
+    font-size: 20px;
+
+  }
+
+}

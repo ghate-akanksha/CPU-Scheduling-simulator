@@ -1,6 +1,7 @@
 import "./Home.css";
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
@@ -8,11 +9,16 @@ import ProcessForm from "../components/ProcessForm";
 import AlgorithmSelector from "../components/AlgorithmSelector";
 import MetricsTable from "../components/MetricsTable";
 import GanttChart from "../components/GanttChart";
-import ComparisonTable
-from "../components/ComparisonTable";
-import ComparisonChart
-from "../components/ComparisonChart";
+import ComparisonTable from "../components/ComparisonTable";
+import ComparisonChart from "../components/ComparisonChart";
+
 const Home = () => {
+
+  // =========================
+  // NAVIGATION
+  // =========================
+
+  const navigate = useNavigate();
 
   // =========================
   // STATES
@@ -30,26 +36,17 @@ const Home = () => {
   const [error, setError] =
     useState("");
 
-  // Store Process Data Globally
-
   const [processData,
     setProcessData] =
     useState([]);
-
-  // Comparison Result
 
   const [comparisonResult,
     setComparisonResult] =
     useState(null);
 
-  // Best Algorithm
-
   const [bestAlgorithm,
     setBestAlgorithm] =
     useState("");
-
-  // Round Robin Time Quantum
-  // for comparison feature
 
   const [timeQuantum,
     setTimeQuantum] =
@@ -70,17 +67,13 @@ const Home = () => {
 
         setResult(null);
 
-        // =========================
-        // STORE PROCESS DATA
-        // =========================
+        // Store process data
 
         setProcessData(
           simulationData.processes
         );
 
-        // =========================
-        // STORE RR QUANTUM
-        // =========================
+        // Store RR Time Quantum
 
         if (
           simulationData.timeQuantum
@@ -92,9 +85,7 @@ const Home = () => {
 
         }
 
-        // =========================
         // API CALL
-        // =========================
 
         const response =
           await axios.post(
@@ -105,9 +96,7 @@ const Home = () => {
 
           );
 
-        // =========================
-        // STORE RESULT
-        // =========================
+        // Store result
 
         setResult(response.data);
 
@@ -146,10 +135,6 @@ const Home = () => {
 
         setComparisonResult(null);
 
-        // =========================
-        // COMPARE API CALL
-        // =========================
-
         const response =
           await axios.post(
 
@@ -165,17 +150,9 @@ const Home = () => {
 
           );
 
-        // =========================
-        // STORE COMPARISON RESULT
-        // =========================
-
         setComparisonResult(
           response.data.comparisons
         );
-
-        // =========================
-        // STORE BEST ALGORITHM
-        // =========================
 
         setBestAlgorithm(
           response.data.bestAlgorithm
@@ -198,6 +175,47 @@ const Home = () => {
         setLoading(false);
 
       }
+
+    };
+
+  // =========================
+  // START LIVE SIMULATION
+  // =========================
+
+  const startLiveSimulation =
+    () => {
+
+      if (
+        processData.length === 0
+      ) {
+
+        alert(
+          "Please run simulation first"
+        );
+
+        return;
+
+      }
+
+      navigate(
+        "/live-simulation",
+
+        {
+
+          state: {
+
+            algorithm,
+
+            processes:
+              processData,
+
+            timeQuantum
+
+          }
+
+        }
+
+      );
 
     };
 
@@ -231,23 +249,24 @@ const Home = () => {
 
         <h2>
 
-          Interactive Operating System
-          Scheduling Visualizer
+          Interactive Operating
+          System Scheduling Visualizer
 
         </h2>
 
         <p>
 
-          Simulate FCFS, SJF, SRJF,
-          Round Robin and Priority
-          Scheduling Algorithms.
+          Simulate FCFS, SJF,
+          SRJF, Round Robin and
+          Priority Scheduling
+          Algorithms.
 
         </p>
 
       </div>
 
       {/* ========================= */}
-      {/* MAIN LAYOUT */}
+      {/* MAIN CONTAINER */}
       {/* ========================= */}
 
       <div className="main-container">
@@ -282,9 +301,7 @@ const Home = () => {
 
           </div>
 
-          {/* ========================= */}
-          {/* COMPARISON SETTINGS */}
-          {/* ========================= */}
+          {/* RR Settings */}
 
           {
             processData.length > 0 && (
@@ -299,26 +316,31 @@ const Home = () => {
 
                 <label>
 
-                  Round Robin Time Quantum
+                  Round Robin
+                  Time Quantum
 
                 </label>
 
                 <input
+
                   type="number"
 
                   min="1"
 
-                  value={
-                    timeQuantum
-                  }
+                  value={timeQuantum}
 
                   onChange={(e) =>
+
                     setTimeQuantum(
+
                       Number(
                         e.target.value
                       )
+
                     )
+
                   }
+
                 />
 
               </div>
@@ -326,31 +348,29 @@ const Home = () => {
             )
           }
 
-          {/* ========================= */}
-          {/* COMPARE BUTTON */}
-          {/* ========================= */}
+          {/* Compare Button */}
 
-         {
-  processData.length > 0 && (
+          {
+            processData.length > 0 && (
 
-    <div className="compare-section">
+              <div className="compare-section">
 
-      <button
-        className="compare-btn"
+                <button
+                  className="compare-btn"
 
-        onClick={
-          compareAlgorithms
-        }
-      >
+                  onClick={
+                    compareAlgorithms
+                  }
+                >
 
-        Compare Algorithms
+                  Compare Algorithms
 
-      </button>
+                </button>
 
-    </div>
+              </div>
 
-  )
-}
+            )
+          }
 
         </div>
 
@@ -397,7 +417,7 @@ const Home = () => {
 
               <>
 
-                {/* Metrics Table */}
+                {/* Metrics */}
 
                 <div className="card">
 
@@ -419,53 +439,76 @@ const Home = () => {
 
                 </div>
 
+                {/* Live Simulation */}
+
+                <div className="live-btn-container">
+
+                  <button
+
+                    className="live-btn"
+
+                    onClick={
+                      startLiveSimulation
+                    }
+
+                  >
+
+                    Start Live Simulation
+
+                  </button>
+
+                </div>
+
               </>
 
             )
           }
 
-          
-{/* ========================= */}
-{/* COMPARISON RESULT */}
-{/* ========================= */}
+          {/* ========================= */}
+          {/* COMPARISON */}
+          {/* ========================= */}
 
-{
-  comparisonResult && (
+          {
+            comparisonResult && (
 
-    <>
+              <>
 
-      {/* Comparison Table */}
+                {/* Comparison Table */}
 
-      <div className="card">
+                <div className="card">
 
-        <ComparisonTable
-          comparisonResult={
-            comparisonResult
+                  <ComparisonTable
+
+                    comparisonResult={
+                      comparisonResult
+                    }
+
+                    bestAlgorithm={
+                      bestAlgorithm
+                    }
+
+                  />
+
+                </div>
+
+                {/* Comparison Chart */}
+
+                <div className="card">
+
+                  <ComparisonChart
+
+                    comparisonResult={
+                      comparisonResult
+                    }
+
+                  />
+
+                </div>
+
+              </>
+
+            )
           }
-
-          bestAlgorithm={
-            bestAlgorithm
-          }
-        />
-
-      </div>
-
-      {/* Comparison Chart */}
-
-      <div className="card">
-
-        <ComparisonChart
-          comparisonResult={
-            comparisonResult
-          }
-        />
-
-      </div>
-
-    </>
-
-  )
-}
 
         </div>
 

@@ -5,13 +5,19 @@ const cors = require("cors");
 const scheduleRoutes = require("./routes/scheduleRoutes");
 
 const app = express();
-
+const liveSimulationRoutes =
+  require(
+    "./routes/liveSimulationRoutes"
+  );
 
 // ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 
-
+app.use(
+  "/api/live",
+  liveSimulationRoutes
+);
 // ================= ROUTES =================
 app.use("/api/schedule", scheduleRoutes);
 
