@@ -1,32 +1,43 @@
-function priorityLive(
-  processes
-) {
+function priorityLive(processes) {
 
   let currentTime = 0;
 
-  let completed = 0;
+  let completedCount = 0;
 
-  let n = processes.length;
+  const n = processes.length;
 
-  let timeline = [];
+  const timeline = [];
 
-  let isCompleted =
+  const isCompleted =
     new Array(n).fill(false);
 
-  while (completed !== n) {
+  const remainingTimes =
+    processes.map(
+      p => p.burstTime
+    );
+
+  while (
+    completedCount < n
+  ) {
 
     let idx = -1;
 
     let highestPriority =
       Infinity;
 
-    // Find highest priority
-    for (let i = 0; i < n; i++) {
+    // Find highest priority process
+    // Lower number = Higher priority
+
+    for (
+      let i = 0;
+      i < n;
+      i++
+    ) {
 
       if (
 
-        processes[i].arrivalTime
-          <= currentTime &&
+        processes[i].arrivalTime <=
+          currentTime &&
 
         !isCompleted[i]
 
@@ -34,14 +45,13 @@ function priorityLive(
 
         if (
 
-          processes[i].priority
-          < highestPriority
+          processes[i].priority <
+          highestPriority
 
         ) {
 
           highestPriority =
-            processes[i]
-              .priority;
+            processes[i].priority;
 
           idx = i;
 
@@ -52,7 +62,10 @@ function priorityLive(
     }
 
     // CPU IDLE
-    if (idx === -1) {
+
+    if (
+      idx === -1
+    ) {
 
       timeline.push({
 
@@ -60,7 +73,36 @@ function priorityLive(
 
         running: "IDLE",
 
-        readyQueue: []
+        readyQueue: [],
+
+        completed:
+
+          processes
+
+            .filter(
+              (p, i) =>
+                isCompleted[i]
+            )
+
+            .map(
+              p => p.pid
+            ),
+
+        remainingTimes:
+
+          Object.fromEntries(
+
+            processes.map(
+              (p, i) => [
+
+                p.pid,
+
+                remainingTimes[i]
+
+              ]
+            )
+
+          )
 
       });
 
@@ -70,33 +112,37 @@ function priorityLive(
 
     }
 
-    let process =
+    const process =
       processes[idx];
 
-    // Execute fully
+    // Execute entire burst
+
     for (
       let t = 0;
       t < process.burstTime;
       t++
     ) {
 
-      let readyQueue =
+      const readyQueue =
+
         processes
 
           .filter(
 
-            (p, index) =>
+            (p, i) =>
 
-              !isCompleted[index] &&
+              i !== idx &&
 
-              index !== idx &&
+              !isCompleted[i] &&
 
-              p.arrivalTime
-                <= currentTime
+              p.arrivalTime <=
+                currentTime
 
           )
 
-          .map((p) => p.pid);
+          .map(
+            p => p.pid
+          );
 
       timeline.push({
 
@@ -104,19 +150,88 @@ function priorityLive(
 
         running: process.pid,
 
-        readyQueue
+        readyQueue,
+
+        completed:
+
+          processes
+
+            .filter(
+              (p, i) =>
+                isCompleted[i]
+            )
+
+            .map(
+              p => p.pid
+            ),
+
+        remainingTimes:
+
+          Object.fromEntries(
+
+            processes.map(
+              (p, i) => [
+
+                p.pid,
+
+                remainingTimes[i]
+
+              ]
+            )
+
+          )
 
       });
+
+      remainingTimes[idx]--;
 
       currentTime++;
 
     }
 
+    // Process completed
+
+    remainingTimes[idx] = 0;
+
     isCompleted[idx] = true;
 
-    completed++;
+    completedCount++;
 
   }
+
+  // Final State
+
+  timeline.push({
+
+    time: currentTime,
+
+    running: "IDLE",
+
+    readyQueue: [],
+
+    completed:
+
+      processes.map(
+        p => p.pid
+      ),
+
+    remainingTimes:
+
+      Object.fromEntries(
+
+        processes.map(
+          p => [
+
+            p.pid,
+
+            0
+
+          ]
+        )
+
+      )
+
+  });
 
   return timeline;
 

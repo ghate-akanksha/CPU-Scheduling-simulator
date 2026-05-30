@@ -1,172 +1,102 @@
-// Priority Scheduling (Non-Preemptive)
-
 function priorityScheduling(processes) {
-
-  console.log("PRIORITY START");
-
-  let n = processes.length;
-
+  const n = processes.length;
   let currentTime = 0;
-
   let completed = 0;
 
-  let isCompleted =
-    new Array(n).fill(false);
+  const isCompleted = new Array(n).fill(false);
+  const result = [];
+  const ganttChart = [];
 
-  let result = [];
-
-  let ganttChart = [];
-
-  let safety = 0;
-
-  while (completed !== n) {
-
-    safety++;
-
-    // SAFETY CHECK
-
-    if (safety > 1000) {
-
-      console.log(
-        "INFINITE LOOP DETECTED"
-      );
-
-      break;
-    }
-
+  while (completed < n) {
     let idx = -1;
 
-    let highestPriority =
-      Infinity;
-
-    // FIND PROCESS
-
     for (let i = 0; i < n; i++) {
-
       if (
-
-        processes[i].arrivalTime
-        <= currentTime &&
-
+        processes[i].arrivalTime <= currentTime &&
         !isCompleted[i]
-
       ) {
-
-        // DEFAULT PRIORITY
-
-        let priority =
-          Number(
-            processes[i].priority
-          ) || 999;
-
-        if (
-          priority <
-          highestPriority
-        ) {
-
-          highestPriority =
-            priority;
-
+        if (idx === -1) {
           idx = i;
+        } else {
+          const a = processes[i];
+          const b = processes[idx];
+
+          const p1 = Number(a.priority);
+          const p2 = Number(b.priority);
+
+          // LOWER NUMBER = HIGHER PRIORITY
+          if (p1 < p2) {
+            idx = i;
+          } 
+          else if (p1 === p2) {
+            if (a.arrivalTime < b.arrivalTime) {
+              idx = i;
+            } 
+            else if (
+              a.arrivalTime === b.arrivalTime &&
+              i < idx
+            ) {
+              idx = i;
+            }
+          }
         }
       }
     }
 
     // CPU IDLE
-
     if (idx === -1) {
+      let nextArrival = Infinity;
 
-      currentTime++;
+      for (let i = 0; i < n; i++) {
+        if (!isCompleted[i]) {
+          nextArrival = Math.min(
+            nextArrival,
+            processes[i].arrivalTime
+          );
+        }
+      }
 
       ganttChart.push({
-
         pid: "IDLE",
-
-        startTime:
-          currentTime - 1,
-
-        endTime:
-          currentTime
-
+        startTime: currentTime,
+        endTime: nextArrival
       });
 
+      currentTime = nextArrival;
       continue;
     }
 
-    let process =
-      processes[idx];
+    const process = processes[idx];
 
-    let pid =
-      process.pid ||
-      `P${idx + 1}`;
-
-    let startTime =
-      currentTime;
-
-    let completionTime =
-      startTime +
-      process.burstTime;
-
-    let turnaroundTime =
-      completionTime -
-      process.arrivalTime;
-
-    let waitingTime =
-      turnaroundTime -
-      process.burstTime;
+    const startTime = currentTime;
+    const completionTime = startTime + process.burstTime;
 
     result.push({
-
-      pid,
-
-      arrivalTime:
-        process.arrivalTime,
-
-      burstTime:
-        process.burstTime,
-
-      priority:
-        process.priority,
-
+      pid: process.pid,
+      arrivalTime: process.arrivalTime,
+      burstTime: process.burstTime,
+      priority: process.priority,
       startTime,
-
       completionTime,
-
-      turnaroundTime,
-
-      waitingTime
-
+      turnaroundTime: completionTime - process.arrivalTime,
+      waitingTime:
+        completionTime -
+        process.arrivalTime -
+        process.burstTime
     });
 
     ganttChart.push({
-
-      pid,
-
+      pid: process.pid,
       startTime,
-
-      endTime:
-        completionTime
-
+      endTime: completionTime
     });
 
-    currentTime =
-      completionTime;
-
+    currentTime = completionTime;
     isCompleted[idx] = true;
-
     completed++;
   }
 
-  console.log("PRIORITY DONE");
-
-  return {
-
-    result,
-
-    ganttChart
-
-  };
+  return { result, ganttChart };
 }
 
-module.exports =
-  priorityScheduling;
+module.exports = priorityScheduling;

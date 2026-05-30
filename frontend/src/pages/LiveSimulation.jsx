@@ -1,263 +1,131 @@
 import "./LiveSimulation.css";
 
-import {
-  useEffect,
-  useState
-} from "react";
+import { useEffect, useState } from "react";
 
 import {
   useLocation,
   useNavigate
 } from "react-router-dom";
 
-import axios from "axios";
+import CPUBox from "../components/CPUBox";
+import ReadyQueue from "../components/ReadyQueue";
+import LiveGantt from "../components/LiveGantt";
+import TimelineControls from "../components/TimelineControls";
+import ProcessTable from "../components/ProcessTable";
+import SimulationStats from "../components/SimulationStats";
 
-// COMPONENTS
+import {
+  fetchSimulation
+} from "../services/simulationApi";
 
-import CPUBox
-from "../components/CPUBox";
+import {
+  generateGanttChart
+} from "../utils/ganttUtils";
 
-import ReadyQueue
-from "../components/ReadyQueue";
+export default function LiveSimulation() {
 
-import LiveGantt
-from "../components/LiveGantt";
-
-import SimulationControls
-from "../components/SimulationControls";
-
-import ProcessTable
-from "../components/ProcessTable";
-
-export default function
-LiveSimulation() {
-
-
-  const location =
-    useLocation();
-
-  const navigate =
-    useNavigate();
-
-  
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const {
-
     algorithm,
-
     processes,
-
     timeQuantum
-
   } = location.state || {};
 
+  const [timeline, setTimeline] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1000);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  const currentState = timeline[currentIndex];
 
-  const [timeline,
-    setTimeline] =
-    useState([]);
-
-  const [currentIndex,
-    setCurrentIndex] =
-    useState(0);
-
-  const [currentState,
-    setCurrentState] =
-    useState(null);
-
-  const [isPlaying,
-    setIsPlaying] =
-    useState(false);
-
-  const [speed,
-    setSpeed] =
-    useState(1000);
-
-  const [gantt,
-    setGantt] =
-    useState([]);
-
-  const [loading,
-    setLoading] =
-    useState(false);
-
-  const [error,
-    setError] =
-    useState("");
-
-
-
-  const apiMap = {
-
-    fcfs:
-      "fcfs",
-
-    sjf:
-      "sjf",
-
-    srjf:
-      "srjf",
-
-    roundRobin:
-      "roundRobin",
-
-    priority:
-      "priorityScheduling"
-
-  };
-
-  
+  const gantt = generateGanttChart(
+    timeline.slice(0, currentIndex + 1)
+  );
 
   useEffect(() => {
 
-    // Prevent crash
+  if (!algorithm || !processes) {
+    navigate("/");
+    return;
+  }
 
-    if (
-      !algorithm ||
-      !processes
-    ) {
+  fetchTimeline();
 
-      navigate("/");
+}, [
+  algorithm,
+  processes,
+  timeQuantum
+]);
 
-      return;
+ const fetchTimeline = async () => {
+
+  try {
+
+    setLoading(true);
+    setError("");
+
+    setTimeline([]);
+    setCurrentIndex(0);
+
+    const data =
+      await fetchSimulation({
+
+        algorithm,
+        processes,
+        timeQuantum
+
+      });
+
+    console.log(
+      "Timeline Data:",
+      data
+    );
+
+    setTimeline(data);
+
+  }
+
+    catch (error) {
+
+      console.log(error);
+
+      setError(
+        "Failed to load simulation"
+      );
 
     }
 
-    fetchTimeline();
+    finally {
 
-  }, []);
+      setLoading(false);
 
+    }
 
-
-  const fetchTimeline =
-    async () => {
-
-      try {
-
-        setLoading(true);
-
-        setError("");
-
-        const endpoint =
-          apiMap[algorithm];
-
-        let response;
-
-        // ROUND ROBIN
-
-        if (
-          algorithm ===
-          "roundRobin"
-        ) {
-
-          response =
-            await axios.post(
-
-              `http://localhost:5000/api/live/${endpoint}`,
-
-              {
-
-                processes,
-
-                timeQuantum
-
-              }
-
-            );
-
-        }
-
-        // OTHER ALGORITHMS
-
-        else {
-
-          response =
-            await axios.post(
-
-              `http://localhost:5000/api/live/${endpoint}`,
-
-              {
-
-                processes
-
-              }
-
-            );
-
-        }
-
-        setTimeline(
-          response.data
-        );
-
-      }
-
-      catch (error) {
-
-        console.log(error);
-
-        setError(
-          "Failed to load simulation"
-        );
-
-      }
-
-      finally {
-
-        setLoading(false);
-
-      }
-
-    };
-
+  };
 
   useEffect(() => {
 
     let interval;
 
     if (
-
       isPlaying &&
-
-      currentIndex <
-        timeline.length
-
+      currentIndex < timeline.length - 1
     ) {
 
       interval =
         setInterval(() => {
 
-          const state =
-            timeline[
-              currentIndex
-            ];
-
-          setCurrentState(
-            state
-          );
-
-          // LIVE GANTT UPDATE
-
-          setGantt((prev) => [
-
-            ...prev,
-
-            state.running
-
-          ]);
-
-          // NEXT STEP
-
           setCurrentIndex(
-            (prev) =>
-              prev + 1
+            prev => prev + 1
           );
 
         }, speed);
 
     }
-
-    // CLEAR INTERVAL
 
     return () =>
       clearInterval(interval);
@@ -265,149 +133,189 @@ LiveSimulation() {
   }, [
 
     isPlaying,
-
     currentIndex,
-
     timeline,
-
     speed
 
   ]);
+useEffect(() => {
 
-
-
-  const handleStart = () => {
-
-    setIsPlaying(true);
-
-  };
-
-  const handlePause = () => {
+  if (
+    currentIndex >=
+    timeline.length - 1
+  ) {
 
     setIsPlaying(false);
 
+  }
+
+}, [
+  currentIndex,
+  timeline.length
+]);
+  const nextStep = () => {
+
+    if (
+      currentIndex <
+      timeline.length - 1
+    ) {
+
+      setCurrentIndex(
+        prev => prev + 1
+      );
+
+    }
+
   };
 
-  const handleReset = () => {
+  const prevStep = () => {
+
+    if (currentIndex > 0) {
+
+      setCurrentIndex(
+        prev => prev - 1
+      );
+
+    }
+
+  };
+
+  const resetSimulation = () => {
 
     setIsPlaying(false);
-
     setCurrentIndex(0);
 
-    setCurrentState(null);
-
-    setGantt([]);
-
   };
-
-  
 
   return (
 
     <div className="live-container">
 
-     
+      <div className="hero-section">
 
-      <h1 className="title">
+        <h1 className="main-title">
+          CPU Scheduling Simulator
+        </h1>
 
-        CPU Scheduling
-        Live Simulation
+        <div className="algorithm-badge">
 
-      </h1>
+          {algorithm?.toUpperCase()}
 
-     
-
-      <h2 className="algo-name">
-
-        Algorithm :
-        {" "}
-
-        {
-          algorithm?.toUpperCase()
-        }
-
-      </h2>
-
-      
-
-      <SimulationControls
-
-        handleStart=
-          {handleStart}
-
-        handlePause=
-          {handlePause}
-
-        handleReset=
-          {handleReset}
-
-        speed={speed}
-
-        setSpeed=
-          {setSpeed}
-
-      />
-
-      
-
-      {
-        loading && (
-
-          <div className="loading">
-
-            Loading Simulation...
-
-          </div>
-
-        )
-      }
-
-     
-
-      {
-        error && (
-
-          <div className="error">
-
-            {error}
-
-          </div>
-
-        )
-      }
-
-      
-
-      <div className="top-section">
-
-        {/* CPU */}
-
-        <CPUBox
-          currentState=
-            {currentState}
-        />
-
-        
-
-        <ReadyQueue
-          currentState=
-            {currentState}
-        />
+        </div>
 
       </div>
 
-      
+      <TimelineControls
 
-      <LiveGantt
-        gantt={gantt}
+        isPlaying={isPlaying}
+
+        setIsPlaying={setIsPlaying}
+
+        nextStep={nextStep}
+
+        prevStep={prevStep}
+
+        resetSimulation={resetSimulation}
+
+        speed={speed}
+
+        setSpeed={setSpeed}
+
+        currentIndex={currentIndex}
+
+        totalSteps={timeline.length}
+
       />
 
-      
+      {loading && (
 
-      <ProcessTable
-        currentState=
-          {currentState}
+        <div className="loading-box">
+
+          Loading Simulation...
+
+        </div>
+
+      )}
+
+      {error && (
+
+        <div className="error-box">
+
+          {error}
+
+        </div>
+
+      )}
+
+      <SimulationStats
+
+        currentState={currentState}
+
+        algorithm={algorithm}
+
+        totalProcesses={processes.length}
+
+        completedCount={
+          currentState
+            ?.completed
+            ?.length || 0
+        }
+
       />
+
+      <div className="simulation-grid">
+
+        <div className="card">
+
+          <h2 className="section-title">
+            CPU State
+          </h2>
+
+          <CPUBox
+            currentState={currentState}
+          />
+
+        </div>
+
+        <div className="card">
+
+          <h2 className="section-title">
+            Ready Queue
+          </h2>
+
+          <ReadyQueue
+            currentState={currentState}
+          />
+
+        </div>
+
+      </div>
+
+      <div className="card">
+
+        <h2 className="section-title">
+          Gantt Chart
+        </h2>
+
+        <LiveGantt gantt={gantt} />
+
+      </div>
+
+      <div className="card">
+
+        <h2 className="section-title">
+          Process Table
+        </h2>
+
+        <ProcessTable
+
+          processes={processes}
+
+          currentState={currentState}
+
+        />
+
+      </div>
 
     </div>
 

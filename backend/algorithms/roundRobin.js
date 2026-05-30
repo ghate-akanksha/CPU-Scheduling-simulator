@@ -1,77 +1,93 @@
-// Round Robin Scheduling Algorithm
-
 function roundRobin(processes, quantum) {
-
   let n = processes.length;
   let currentTime = 0;
+
   let queue = [];
+  let result = [];
+  let ganttChart = [];
 
   let remainingTime = processes.map(p => p.burstTime);
   let completed = 0;
 
-  let result = [];
-  let ganttChart = [];
-
   let visited = new Array(n).fill(false);
 
-  // Sort by arrival time initially
-  processes.sort((a, b) => a.arrivalTime - b.arrivalTime);
+  // IMPORTANT: do NOT mutate original input
+  let sorted = [...processes].sort(
+    (a, b) => a.arrivalTime - b.arrivalTime
+  );
 
-  queue.push(0);
-  visited[0] = true;
+  // helper: add newly arrived processes
+  function addArrivals() {
+    for (let i = 0; i < n; i++) {
+      if (
+        !visited[i] &&
+        sorted[i].arrivalTime <= currentTime
+      ) {
+        queue.push(i);
+        visited[i] = true;
+      }
+    }
+  }
 
-  while (completed !== n) {
+  addArrivals();
 
+  while (completed < n) {
     if (queue.length === 0) {
-      currentTime++;
+      // jump to next arrival (FIXED IDLE HANDLING)
+      let nextArrival = Infinity;
+
       for (let i = 0; i < n; i++) {
-        if (!visited[i] && processes[i].arrivalTime <= currentTime) {
-          queue.push(i);
-          visited[i] = true;
+        if (!visited[i]) {
+          nextArrival = Math.min(
+            nextArrival,
+            sorted[i].arrivalTime
+          );
         }
       }
+
+      ganttChart.push({
+        pid: "IDLE",
+        startTime: currentTime,
+        endTime: nextArrival
+      });
+
+      currentTime = nextArrival;
+      addArrivals();
       continue;
     }
 
     let idx = queue.shift();
-    let process = processes[idx];
-    let pid = process.pid || `P${idx + 1}`;
+    let process = sorted[idx];
 
     let startTime = currentTime;
 
-    // Execute process
     let execTime = Math.min(quantum, remainingTime[idx]);
 
     currentTime += execTime;
     remainingTime[idx] -= execTime;
 
     ganttChart.push({
-      pid,
+      pid: process.pid,
       startTime,
       endTime: currentTime
     });
 
-    // Add newly arrived processes
-    for (let i = 0; i < n; i++) {
-      if (!visited[i] && processes[i].arrivalTime <= currentTime) {
-        queue.push(i);
-        visited[i] = true;
-      }
-    }
+    addArrivals();
 
-    // If process not finished → requeue
     if (remainingTime[idx] > 0) {
       queue.push(idx);
     } else {
-
       completed++;
 
       let completionTime = currentTime;
-      let turnaroundTime = completionTime - process.arrivalTime;
-      let waitingTime = turnaroundTime - process.burstTime;
+      let turnaroundTime =
+        completionTime - process.arrivalTime;
+
+      let waitingTime =
+        turnaroundTime - process.burstTime;
 
       result.push({
-        pid,
+        pid: process.pid,
         arrivalTime: process.arrivalTime,
         burstTime: process.burstTime,
         completionTime,
@@ -81,10 +97,7 @@ function roundRobin(processes, quantum) {
     }
   }
 
-  return {
-    result,
-    ganttChart
-  };
+  return { result, ganttChart };
 }
 
 module.exports = roundRobin;

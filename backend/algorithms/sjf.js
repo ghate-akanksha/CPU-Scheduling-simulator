@@ -1,63 +1,73 @@
-// SJF (Non-Preemptive) Scheduling Algorithm
-
 function sjf(processes) {
-
+  let n = processes.length;
   let currentTime = 0;
   let completed = 0;
-  let n = processes.length;
 
   let isCompleted = new Array(n).fill(false);
 
   let result = [];
   let ganttChart = [];
 
-  while (completed !== n) {
-
+  while (completed < n) {
     let idx = -1;
     let minBurst = Infinity;
 
-    // Find shortest job among arrived processes
+    // find shortest job among arrived processes
     for (let i = 0; i < n; i++) {
-
       if (
         processes[i].arrivalTime <= currentTime &&
         !isCompleted[i]
       ) {
-
-        if (processes[i].burstTime < minBurst) {
+        if (
+          processes[i].burstTime < minBurst ||
+          (
+            processes[i].burstTime === minBurst &&
+            processes[i].arrivalTime <
+              processes[idx]?.arrivalTime
+          )
+        ) {
           minBurst = processes[i].burstTime;
           idx = i;
         }
       }
     }
 
-    // CPU IDLE CASE
+    // CPU IDLE → jump to next arrival (FIXED)
     if (idx === -1) {
+      let nextArrival = Infinity;
+
+      for (let i = 0; i < n; i++) {
+        if (!isCompleted[i]) {
+          nextArrival = Math.min(
+            nextArrival,
+            processes[i].arrivalTime
+          );
+        }
+      }
 
       ganttChart.push({
         pid: "IDLE",
         startTime: currentTime,
-        endTime: currentTime + 1
+        endTime: nextArrival
       });
 
-      currentTime++;
+      currentTime = nextArrival;
       continue;
     }
 
-    // Process execution
     let process = processes[idx];
-
-    let pid = process.pid || `P${idx + 1}`;
 
     let startTime = currentTime;
     let completionTime = startTime + process.burstTime;
 
-    let turnaroundTime = completionTime - process.arrivalTime;
-    let waitingTime = turnaroundTime - process.burstTime;
+    let turnaroundTime =
+      completionTime - process.arrivalTime;
 
-    // Store result
+    let waitingTime =
+      turnaroundTime - process.burstTime;
+
     result.push({
-      pid,
+      pid: process.pid,
       arrivalTime: process.arrivalTime,
       burstTime: process.burstTime,
       startTime,
@@ -66,9 +76,8 @@ function sjf(processes) {
       waitingTime
     });
 
-    // Store Gantt Chart (IMPORTANT FIX)
     ganttChart.push({
-      pid,
+      pid: process.pid,
       startTime,
       endTime: completionTime
     });

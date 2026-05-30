@@ -1,98 +1,141 @@
 import "./TimelineControls.css";
 
 const TimelineControls = ({
+
   isPlaying,
+
   setIsPlaying,
+
   nextStep,
+
   prevStep,
-  resetSimulation
+
+  resetSimulation,
+
+  speed,
+
+  setSpeed,
+
+  currentIndex,
+
+  totalSteps
+
 }) => {
 
   return (
 
     <div className="controls-container">
 
-      {/* PLAY / PAUSE */}
-
       <button
+
         className={`control-btn play-btn ${
-          isPlaying ? "pause" : ""
+          isPlaying
+            ? "pause"
+            : ""
         }`}
+
         onClick={() =>
           setIsPlaying(
             !isPlaying
           )
         }
+
       >
-
-        <span className="btn-icon">
-
-          {
-            isPlaying
-              ? "⏸"
-              : "▶"
-          }
-
-        </span>
 
         {
           isPlaying
-            ? "Pause"
-            : "Play"
+            ? "⏸ Pause"
+            : "▶ Play"
         }
 
       </button>
 
-      {/* PREVIOUS */}
-
       <button
-        className="control-btn prev-btn"
+        className="control-btn"
         onClick={prevStep}
+        disabled={currentIndex === 0}
       >
 
-        <span className="btn-icon">
-
-          ⏮
-
-        </span>
-
-        Prev
+        ⏮ Prev
 
       </button>
 
-      {/* NEXT */}
-
       <button
-        className="control-btn next-btn"
+        className="control-btn"
         onClick={nextStep}
+        disabled={
+          currentIndex >=
+          totalSteps - 1
+        }
       >
 
-        <span className="btn-icon">
-
-          ⏭
-
-        </span>
-
-        Next
+        ⏭ Next
 
       </button>
 
-      {/* RESET */}
-
       <button
-        className="control-btn reset-btn"
+        className="control-btn"
         onClick={resetSimulation}
       >
 
-        <span className="btn-icon">
-
-          ⭮
-
-        </span>
-
-        Reset
+        ⭮ Reset
 
       </button>
+
+      <div className="speed-control">
+
+        <label>
+
+          Speed :
+
+        </label>
+
+        <select
+
+          value={speed}
+
+          onChange={(e) =>
+            setSpeed(
+              Number(
+                e.target.value
+              )
+            )
+          }
+
+        >
+
+          <option value={1500}>
+            Slow
+          </option>
+
+          <option value={1000}>
+            Normal
+          </option>
+
+          <option value={500}>
+            Fast
+          </option>
+
+          <option value={200}>
+            Very Fast
+          </option>
+
+        </select>
+
+      </div>
+
+      <div className="timeline-progress">
+
+        Step :
+        {" "}
+
+        {currentIndex}
+
+        {" / "}
+
+        {Math.max(totalSteps - 1, 0)}
+
+      </div>
 
     </div>
 

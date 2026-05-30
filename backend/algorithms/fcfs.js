@@ -1,42 +1,44 @@
 function fcfs(processes) {
-
   let currentTime = 0;
   let result = [];
   let ganttChart = [];
 
-  // Sort by arrival time (important for FCFS)
+  // Sort by arrival time (and PID as tie-breaker)
   let sortedProcesses = [...processes].sort(
-    (a, b) => a.arrivalTime - b.arrivalTime
+    (a, b) =>
+      a.arrivalTime - b.arrivalTime ||
+      a.pid.localeCompare(b.pid)
   );
 
-  for (let i = 0; i < sortedProcesses.length; i++) {
+  for (let process of sortedProcesses) {
+    const { pid, arrivalTime, burstTime } = process;
 
-    let process = sortedProcesses[i];
+    // validation
+    if (burstTime <= 0) {
+      throw new Error(`Invalid burst time for process ${pid}`);
+    }
 
-    let pid = process.pid || `P${i + 1}`;
-
-    // CPU IDLE TIME HANDLING
-    if (currentTime < process.arrivalTime) {
-
+    // CPU idle time handling
+    if (currentTime < arrivalTime) {
       ganttChart.push({
         pid: "IDLE",
         startTime: currentTime,
-        endTime: process.arrivalTime
+        endTime: arrivalTime
       });
 
-      currentTime = process.arrivalTime;
+      currentTime = arrivalTime;
     }
 
     let startTime = currentTime;
-    let completionTime = startTime + process.burstTime;
+    let completionTime = startTime + burstTime;
 
-    let turnaroundTime = completionTime - process.arrivalTime;
-    let waitingTime = turnaroundTime - process.burstTime;
+    let turnaroundTime = completionTime - arrivalTime;
+    let waitingTime = turnaroundTime - burstTime;
 
     result.push({
       pid,
-      arrivalTime: process.arrivalTime,
-      burstTime: process.burstTime,
+      arrivalTime,
+      burstTime,
       startTime,
       completionTime,
       turnaroundTime,

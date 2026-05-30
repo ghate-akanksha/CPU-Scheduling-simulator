@@ -2,39 +2,92 @@ export default function ReadyQueue({
   currentState
 }) {
 
+  const readyQueue =
+  Array.isArray(
+    currentState?.readyQueue
+  )
+    ? currentState.readyQueue
+    : [];
+    
+console.log(
+  "Ready Queue:",
+  readyQueue
+);
   return (
 
     <div className="queue-box">
 
-      <h2>Ready Queue</h2>
+      <h2>
+        Ready Queue
+      </h2>
 
-      <div className="queue-list">
+      {
 
-        {
-          currentState?.readyQueue
-          ?.length === 0
+        readyQueue.length === 0
 
-          ?
+        ? (
 
-          <p>Empty</p>
+          <div className="empty-queue">
 
-          :
+            <p>
+              Queue Empty
+            </p>
 
-          currentState?.readyQueue
-          ?.map((p, index) => (
+          </div>
 
-            <div
-              className="queue-item"
-              key={index}
-            >
+        )
 
-              {p}
+        : (
 
-            </div>
+          <div className="queue-list">
 
-          ))
+            {
 
-        }
+              readyQueue.map(
+                (
+                  process,
+                  index
+                ) => (
+
+                  <div
+                    className="queue-item"
+                    key={`${process}-${index}`}
+                  >
+
+                    <h3>
+                      {process}
+                    </h3>
+
+                    <small>
+
+                      Position :
+                      {" "}
+                      {index + 1}
+
+                    </small>
+
+                  </div>
+
+                )
+              )
+
+            }
+
+          </div>
+
+        )
+
+      }
+
+      <div className="queue-footer">
+
+        <p>
+
+          Total Waiting :
+          {" "}
+          {readyQueue.length}
+
+        </p>
 
       </div>
 

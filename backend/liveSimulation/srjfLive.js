@@ -2,40 +2,48 @@ function srjfLive(processes) {
 
   let currentTime = 0;
 
-  let completed = 0;
+  let completedCount = 0;
 
-  let n = processes.length;
+  const n = processes.length;
 
-  let timeline = [];
+  const timeline = [];
 
-  // Remaining time
-  let remainingTime =
+  const remainingTime =
     processes.map(
-      (p) => p.burstTime
+      p => p.burstTime
     );
 
-  while (completed !== n) {
+  while (
+    completedCount < n
+  ) {
 
     let idx = -1;
 
     let shortest =
       Infinity;
 
-    // Find shortest remaining
-    for (let i = 0; i < n; i++) {
+    // Find shortest remaining process
+
+    for (
+      let i = 0;
+      i < n;
+      i++
+    ) {
 
       if (
 
-        processes[i].arrivalTime
-          <= currentTime &&
+        processes[i].arrivalTime <=
+          currentTime &&
 
         remainingTime[i] > 0
 
       ) {
 
         if (
-          remainingTime[i]
-          < shortest
+
+          remainingTime[i] <
+          shortest
+
         ) {
 
           shortest =
@@ -50,7 +58,10 @@ function srjfLive(processes) {
     }
 
     // CPU IDLE
-    if (idx === -1) {
+
+    if (
+      idx === -1
+    ) {
 
       timeline.push({
 
@@ -58,7 +69,36 @@ function srjfLive(processes) {
 
         running: "IDLE",
 
-        readyQueue: []
+        readyQueue: [],
+
+        completed:
+
+          processes
+
+            .filter(
+              (p, i) =>
+                remainingTime[i] === 0
+            )
+
+            .map(
+              p => p.pid
+            ),
+
+        remainingTimes:
+
+          Object.fromEntries(
+
+            processes.map(
+              (p, i) => [
+
+                p.pid,
+
+                remainingTime[i]
+
+              ]
+            )
+
+          )
 
       });
 
@@ -68,25 +108,26 @@ function srjfLive(processes) {
 
     }
 
-    // Ready Queue
-    let readyQueue =
+    const readyQueue =
+
       processes
 
         .filter(
 
-          (p, index) =>
+          (p, i) =>
 
-            index !== idx &&
+            i !== idx &&
 
-            p.arrivalTime
-              <= currentTime &&
+            p.arrivalTime <=
+              currentTime &&
 
-            remainingTime[index]
-              > 0
+            remainingTime[i] > 0
 
         )
 
-        .map((p) => p.pid);
+        .map(
+          p => p.pid
+        );
 
     timeline.push({
 
@@ -95,26 +136,92 @@ function srjfLive(processes) {
       running:
         processes[idx].pid,
 
-      readyQueue
+      readyQueue,
+
+      completed:
+
+        processes
+
+          .filter(
+            (p, i) =>
+              remainingTime[i] === 0
+          )
+
+          .map(
+            p => p.pid
+          ),
+
+      remainingTimes:
+
+        Object.fromEntries(
+
+          processes.map(
+            (p, i) => [
+
+              p.pid,
+
+              remainingTime[i]
+
+            ]
+          )
+
+        )
 
     });
 
-    remainingTime[idx]--;
+    // Execute 1 unit
 
-    currentTime++;
+    remainingTime[idx]--;
 
     if (
       remainingTime[idx] === 0
     ) {
 
-      completed++;
+      completedCount++;
 
     }
 
+    currentTime++;
+
   }
+
+  // FINAL IDLE STATE
+
+  timeline.push({
+
+    time: currentTime,
+
+    running: "IDLE",
+
+    readyQueue: [],
+
+    completed:
+
+      processes.map(
+        p => p.pid
+      ),
+
+    remainingTimes:
+
+      Object.fromEntries(
+
+        processes.map(
+          p => [
+
+            p.pid,
+
+            0
+
+          ]
+        )
+
+      )
+
+  });
 
   return timeline;
 
 }
 
-module.exports = srjfLive;
+module.exports =
+  srjfLive;

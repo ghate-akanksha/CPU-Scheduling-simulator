@@ -3,32 +3,114 @@ function rrLive(
   timeQuantum
 ) {
 
-  let timeline = [];
+  const timeline = [];
 
   let currentTime = 0;
 
-  let queue = [];
+  const n = processes.length;
 
-  let visited = [];
+  const queue = [];
 
-  let remainingTime =
+  const visited =
+    new Array(n).fill(false);
+
+  const remainingTime =
     processes.map(
-      (p) => p.burstTime
+      p => p.burstTime
     );
 
-  // First process
-  queue.push(0);
+  let completed = 0;
 
-  visited[0] = true;
+  while (
+    completed < n
+  ) {
 
-  while (queue.length > 0) {
+    // Add arrived processes
 
-    let idx = queue.shift();
+    for (
+      let i = 0;
+      i < n;
+      i++
+    ) {
 
-    let executeTime =
+      if (
+
+        !visited[i] &&
+
+        processes[i].arrivalTime <=
+          currentTime
+
+      ) {
+
+        queue.push(i);
+
+        visited[i] = true;
+
+      }
+
+    }
+
+    // CPU IDLE
+
+    if (
+      queue.length === 0
+    ) {
+
+      timeline.push({
+
+        time: currentTime,
+
+        running: "IDLE",
+
+        readyQueue: [],
+
+        completed:
+
+          processes
+
+            .filter(
+              (p, i) =>
+                remainingTime[i] === 0
+            )
+
+            .map(
+              p => p.pid
+            ),
+
+        remainingTimes:
+
+          Object.fromEntries(
+
+            processes.map(
+              (p, i) => [
+
+                p.pid,
+
+                remainingTime[i]
+
+              ]
+            )
+
+          )
+
+      });
+
+      currentTime++;
+
+      continue;
+
+    }
+
+    const idx =
+      queue.shift();
+
+    const executeTime =
       Math.min(
+
         timeQuantum,
+
         remainingTime[idx]
+
       );
 
     for (
@@ -37,20 +119,20 @@ function rrLive(
       t++
     ) {
 
-      // Add newly arrived
+      // New arrivals
+
       for (
         let i = 0;
-        i < processes.length;
+        i < n;
         i++
       ) {
 
         if (
 
-          processes[i]
-            .arrivalTime
-            <= currentTime &&
+          !visited[i] &&
 
-          !visited[i]
+          processes[i].arrivalTime <=
+            currentTime
 
         ) {
 
@@ -70,9 +152,39 @@ function rrLive(
           processes[idx].pid,
 
         readyQueue:
+
           queue.map(
-            (i) =>
+            i =>
               processes[i].pid
+          ),
+
+        completed:
+
+          processes
+
+            .filter(
+              (p, i) =>
+                remainingTime[i] === 0
+            )
+
+            .map(
+              p => p.pid
+            ),
+
+        remainingTimes:
+
+          Object.fromEntries(
+
+            processes.map(
+              (p, i) => [
+
+                p.pid,
+
+                remainingTime[i]
+
+              ]
+            )
+
           )
 
       });
@@ -83,7 +195,6 @@ function rrLive(
 
     }
 
-    // Re-add process
     if (
       remainingTime[idx] > 0
     ) {
@@ -92,10 +203,53 @@ function rrLive(
 
     }
 
+    else {
+
+      remainingTime[idx] = 0;
+
+      completed++;
+
+    }
+
   }
+
+  // FINAL IDLE STATE
+
+  timeline.push({
+
+    time: currentTime,
+
+    running: "IDLE",
+
+    readyQueue: [],
+
+    completed:
+
+      processes.map(
+        p => p.pid
+      ),
+
+    remainingTimes:
+
+      Object.fromEntries(
+
+        processes.map(
+          p => [
+
+            p.pid,
+
+            0
+
+          ]
+        )
+
+      )
+
+  });
 
   return timeline;
 
 }
 
-module.exports = rrLive;
+module.exports =
+  rrLive;

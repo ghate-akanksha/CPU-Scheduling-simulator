@@ -1,9 +1,42 @@
 import "./SimulationStats.css";
 
 const SimulationStats = ({
-  time,
-  algorithm
+
+  currentState,
+
+  algorithm,
+
+  totalProcesses,
+
+  completedCount
+
 }) => {
+
+  const currentTime =
+    currentState?.time ?? 0;
+
+  const allCompleted =
+
+  currentState?.remainingTimes &&
+
+  Object.values(
+    currentState.remainingTimes
+  ).every(
+    time => time === 0
+  );
+
+const runningProcess =
+
+  allCompleted
+
+    ? "IDLE"
+
+    : currentState?.running ||
+      "IDLE";
+
+  const readyQueueLength =
+    currentState?.readyQueue
+      ?.length ?? 0;
 
   return (
 
@@ -12,14 +45,26 @@ const SimulationStats = ({
       <div className="stat-card">
 
         <h3>
-
           Current Time
+        </h3>
 
+        <h1>
+          {currentTime}
+        </h1>
+
+      </div>
+
+      <div className="stat-card">
+
+        <h3>
+          Algorithm
         </h3>
 
         <h1>
 
-          {time}
+          {
+            algorithm?.toUpperCase()
+          }
 
         </h1>
 
@@ -28,16 +73,43 @@ const SimulationStats = ({
       <div className="stat-card">
 
         <h3>
+          Running
+        </h3>
 
-          Algorithm
+        <h1>
+          {runningProcess}
+        </h1>
 
+      </div>
+
+      <div className="stat-card">
+
+        <h3>
+          Ready Queue
+        </h3>
+
+        <h1>
+          {readyQueueLength}
+        </h1>
+
+      </div>
+
+      <div className="stat-card">
+
+        <h3>
+          Completed
         </h3>
 
         <h1>
 
           {
-            algorithm
-              ?.toUpperCase()
+            completedCount
+          }
+
+          /
+
+          {
+            totalProcesses
           }
 
         </h1>

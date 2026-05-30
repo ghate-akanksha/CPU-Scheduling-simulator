@@ -2,29 +2,41 @@ function sjfLive(processes) {
 
   let currentTime = 0;
 
-  let completed = 0;
+  let completedCount = 0;
 
-  let n = processes.length;
+  const n = processes.length;
 
-  let timeline = [];
+  const timeline = [];
 
-  let isCompleted =
+  const isCompleted =
     new Array(n).fill(false);
 
-  while (completed !== n) {
+  const remainingTimes =
+    processes.map(
+      p => p.burstTime
+    );
+
+  while (
+    completedCount < n
+  ) {
 
     let idx = -1;
 
     let shortestBurst =
       Infinity;
 
-    // Find shortest job
-    for (let i = 0; i < n; i++) {
+    // Find shortest available job
+
+    for (
+      let i = 0;
+      i < n;
+      i++
+    ) {
 
       if (
 
-        processes[i].arrivalTime
-          <= currentTime &&
+        processes[i].arrivalTime <=
+          currentTime &&
 
         !isCompleted[i]
 
@@ -32,14 +44,13 @@ function sjfLive(processes) {
 
         if (
 
-          processes[i].burstTime
-          < shortestBurst
+          processes[i].burstTime <
+          shortestBurst
 
         ) {
 
           shortestBurst =
-            processes[i]
-              .burstTime;
+            processes[i].burstTime;
 
           idx = i;
 
@@ -50,7 +61,10 @@ function sjfLive(processes) {
     }
 
     // CPU IDLE
-    if (idx === -1) {
+
+    if (
+      idx === -1
+    ) {
 
       timeline.push({
 
@@ -58,7 +72,36 @@ function sjfLive(processes) {
 
         running: "IDLE",
 
-        readyQueue: []
+        readyQueue: [],
+
+        completed:
+
+          processes
+
+            .filter(
+              (p, i) =>
+                isCompleted[i]
+            )
+
+            .map(
+              p => p.pid
+            ),
+
+        remainingTimes:
+
+          Object.fromEntries(
+
+            processes.map(
+              (p, i) => [
+
+                p.pid,
+
+                remainingTimes[i]
+
+              ]
+            )
+
+          )
 
       });
 
@@ -68,38 +111,37 @@ function sjfLive(processes) {
 
     }
 
-    let process =
+    const process =
       processes[idx];
 
-    // Execute fully
+    // Execute entire burst
+
     for (
-
       let t = 0;
-
       t < process.burstTime;
-
       t++
-
     ) {
 
-      // Ready Queue
-      let readyQueue =
+      const readyQueue =
+
         processes
 
           .filter(
 
-            (p, index) =>
+            (p, i) =>
 
-              !isCompleted[index] &&
+              i !== idx &&
 
-              index !== idx &&
+              !isCompleted[i] &&
 
-              p.arrivalTime
-                <= currentTime
+              p.arrivalTime <=
+                currentTime
 
           )
 
-          .map((p) => p.pid);
+          .map(
+            p => p.pid
+          );
 
       timeline.push({
 
@@ -107,22 +149,92 @@ function sjfLive(processes) {
 
         running: process.pid,
 
-        readyQueue
+        readyQueue,
+
+        completed:
+
+          processes
+
+            .filter(
+              (p, i) =>
+                isCompleted[i]
+            )
+
+            .map(
+              p => p.pid
+            ),
+
+        remainingTimes:
+
+          Object.fromEntries(
+
+            processes.map(
+              (p, i) => [
+
+                p.pid,
+
+                remainingTimes[i]
+
+              ]
+            )
+
+          )
 
       });
+
+      remainingTimes[idx]--;
 
       currentTime++;
 
     }
 
+    // Mark process complete
+
+    remainingTimes[idx] = 0;
+
     isCompleted[idx] = true;
 
-    completed++;
+    completedCount++;
 
   }
+
+  // FINAL IDLE STATE
+
+  timeline.push({
+
+    time: currentTime,
+
+    running: "IDLE",
+
+    readyQueue: [],
+
+    completed:
+
+      processes.map(
+        p => p.pid
+      ),
+
+    remainingTimes:
+
+      Object.fromEntries(
+
+        processes.map(
+          p => [
+
+            p.pid,
+
+            0
+
+          ]
+        )
+
+      )
+
+  });
 
   return timeline;
 
 }
 
-module.exports = sjfLive;
+module.exports =
+  sjfLive;

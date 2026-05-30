@@ -1,95 +1,101 @@
-// SRJF / SRTF (Preemptive SJF Scheduling Algorithm)
-
 function srjf(processes) {
+  const n = processes.length;
 
-  let n = processes.length;
+  // avoid mutation
+  const proc = [...processes].sort(
+    (a, b) =>
+      a.arrivalTime - b.arrivalTime ||
+      a.pid.localeCompare(b.pid)
+  );
+
   let currentTime = 0;
   let completed = 0;
 
-  let remainingTime = processes.map(p => p.burstTime);
-  let isCompleted = new Array(n).fill(false);
+  const remainingTime = proc.map(p => p.burstTime);
+  const isCompleted = new Array(n).fill(false);
 
-  let result = [];
-  let ganttChart = [];
+  const result = [];
+  const ganttChart = [];
 
-  let lastProcess = null;
-  let startTime = 0;
+  let lastPid = null;
 
-  while (completed !== n) {
-
+  while (completed < n) {
     let idx = -1;
     let minRemaining = Infinity;
 
-    // Find process with shortest remaining time
     for (let i = 0; i < n; i++) {
-
       if (
-        processes[i].arrivalTime <= currentTime &&
+        proc[i].arrivalTime <= currentTime &&
         !isCompleted[i] &&
         remainingTime[i] > 0
       ) {
-
-        if (remainingTime[i] < minRemaining) {
+        if (
+          remainingTime[i] < minRemaining ||
+          (
+            remainingTime[i] === minRemaining &&
+            proc[i].arrivalTime <
+              proc[idx]?.arrivalTime
+          )
+        ) {
           minRemaining = remainingTime[i];
           idx = i;
         }
       }
     }
 
-    // ================= CPU IDLE =================
+    // CPU IDLE (jump instead of +1 → FIXED)
     if (idx === -1) {
+      let nextArrival = Infinity;
 
-      if (lastProcess !== "IDLE") {
-        startTime = currentTime;
-        lastProcess = "IDLE";
+      for (let i = 0; i < n; i++) {
+        if (!isCompleted[i]) {
+          nextArrival = Math.min(
+            nextArrival,
+            proc[i].arrivalTime
+          );
+        }
       }
 
-      currentTime++;
+      ganttChart.push({
+        pid: "IDLE",
+        startTime: currentTime,
+        endTime: nextArrival
+      });
 
-      // close idle block when process comes
-      if (lastProcess === "IDLE") {
-        ganttChart.push({
-          pid: "IDLE",
-          startTime,
-          endTime: currentTime
-        });
-      }
-
+      currentTime = nextArrival;
+      lastPid = "IDLE";
       continue;
     }
 
-    let process = processes[idx];
-    let pid = process.pid || `P${idx + 1}`;
+    const process = proc[idx];
+    const pid = process.pid || `P${idx + 1}`;
 
-    // ================= CONTEXT SWITCH =================
-    if (lastProcess !== pid) {
-
-      startTime = currentTime;
-
+    // Gantt handling (continuous merge)
+    if (lastPid !== pid) {
       ganttChart.push({
         pid,
-        startTime,
+        startTime: currentTime,
         endTime: currentTime + 1
       });
-
     } else {
-      // extend last block
       ganttChart[ganttChart.length - 1].endTime++;
     }
 
     remainingTime[idx]--;
     currentTime++;
-    lastProcess = pid;
+    lastPid = pid;
 
-    // ================= PROCESS COMPLETION =================
+    // completion
     if (remainingTime[idx] === 0) {
-
       isCompleted[idx] = true;
       completed++;
 
-      let completionTime = currentTime;
-      let turnaroundTime = completionTime - process.arrivalTime;
-      let waitingTime = turnaroundTime - process.burstTime;
+      const completionTime = currentTime;
+      const turnaroundTime =
+        completionTime - process.arrivalTime;
+
+      const waitingTime =
+        turnaroundTime - process.burstTime;
 
       result.push({
         pid,
@@ -102,9 +108,17 @@ function srjf(processes) {
     }
   }
 
+  const avgWaitingTime =
+    result.reduce((a, b) => a + b.waitingTime, 0) / n;
+
+  const avgTurnaroundTime =
+    result.reduce((a, b) => a + b.turnaroundTime, 0) / n;
+
   return {
     result,
-    ganttChart
+    ganttChart,
+    averageWaitingTime: avgWaitingTime.toFixed(2),
+    averageTurnaroundTime: avgTurnaroundTime.toFixed(2)
   };
 }
 

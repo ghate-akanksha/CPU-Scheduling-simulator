@@ -82,60 +82,74 @@ router.post("/sjf", (req, res) => {
 
 // ================= SRJF (SRTF) =================
 router.post("/srjf", (req, res) => {
+
   try {
+
     const { processes } = req.body;
 
+    // CHECK EMPTY
     if (!processes || processes.length === 0) {
+
       return res.status(400).json({
         success: false,
         message: "Processes data is required"
       });
+
     }
 
+    // VALIDATION
+    const invalid = processes.some(
+
+      p =>
+
+        p.arrivalTime == null ||
+        p.burstTime == null
+
+    );
+
+    if (invalid) {
+
+      return res.status(400).json({
+
+        success: false,
+
+        message:
+          "arrivalTime and burstTime required"
+
+      });
+
+    }
+
+    // RUN ALGORITHM
     const output = srjf(processes);
 
+    // RESPONSE
     return res.status(200).json({
+
       success: true,
+
       algorithm: "SRJF",
+
       ...output
+
     });
 
-  } catch (error) {
+  }
+
+  catch (error) {
+
     return res.status(500).json({
+
       success: false,
+
       message: "Server Error",
+
       error: error.message
+
     });
+
   }
-});
 
-// ====== round robin ========
-router.post("/rr", (req, res) => {
-  try {
-
-    const { processes, quantum } = req.body;
-
-    if (!processes || processes.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Processes required"
-      });
-    }
-
-    const output = roundRobin(processes, quantum || 2);
-
-    return res.json({
-      success: true,
-      algorithm: "Round Robin",
-      ...output
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
 });
 
 // Priority Route
@@ -221,5 +235,64 @@ router.post(
 
 );
 
-// ================= EXPORT =================
+// ================= ROUND ROBIN =================
+router.post("/rr", (req, res) => {
+
+  try {
+
+    const { processes, quantum } = req.body;
+
+    // CHECK PROCESS LIST
+    if (!processes || processes.length === 0) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Processes required"
+      });
+
+    }
+
+    // CHECK QUANTUM
+    if (!quantum || quantum <= 0) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Valid quantum required"
+      });
+
+    }
+
+    // RUN ALGORITHM
+    const output =
+      roundRobin(processes, quantum);
+
+    return res.status(200).json({
+
+      success: true,
+
+      algorithm: "Round Robin",
+
+      quantum,
+
+      ...output
+
+    });
+
+  }
+
+  catch (error) {
+
+    return res.status(500).json({
+
+      success: false,
+
+      message: "Server Error",
+
+      error: error.message
+
+    });
+
+  }
+
+});
 module.exports = router;

@@ -14,11 +14,7 @@ import ComparisonChart from "../components/ComparisonChart";
 
 const Home = () => {
 
-  
-
   const navigate = useNavigate();
-
- 
 
   const [algorithm, setAlgorithm] =
     useState("fcfs");
@@ -48,7 +44,9 @@ const Home = () => {
     setTimeQuantum] =
     useState(2);
 
-  
+
+
+  // ================= RUN SIMULATION =================
 
   const handleSimulation =
     async (simulationData) => {
@@ -61,14 +59,16 @@ const Home = () => {
 
         setResult(null);
 
-    
-
+        // STORE PROCESS DATA
         setProcessData(
           simulationData.processes
         );
+        console.log(
+  "Simulation Algorithm:",
+  simulationData.algorithm
+);
 
-    
-
+        // STORE TIME QUANTUM
         if (
           simulationData.timeQuantum
         ) {
@@ -79,18 +79,85 @@ const Home = () => {
 
         }
 
-        // API CALL
+        // ================= ROUTE MAP =================
+
+        const routeMap = {
+
+          fcfs: "fcfs",
+
+          sjf: "sjf",
+
+          srjf: "srjf",
+
+          srtf: "srjf",
+
+          rr: "rr",
+
+          roundRobin: "rr",
+
+          priority: "priority"
+
+        };
+
+        console.log(
+  "Simulation Algorithm:",
+  simulationData.algorithm
+);
+
+const endpoint =
+  routeMap[
+    simulationData.algorithm
+  ] || "fcfs";
+
+
+        // ================= REQUEST DATA =================
+
+        const requestData = {
+
+          processes:
+            simulationData.processes
+
+        };
+
+
+
+        // RR NEEDS QUANTUM
+        if (endpoint === "rr") {
+
+          requestData.quantum =
+
+            simulationData.timeQuantum ||
+
+            timeQuantum;
+
+        }
+
+
+
+        // PRIORITY NEEDS PRIORITY FIELD
+        if (endpoint === "priority") {
+
+          requestData.processes =
+            simulationData.processes;
+
+        }
+
+
+
+        // ================= API CALL =================
 
         const response =
           await axios.post(
 
-            `http://localhost:5000/api/schedule/${simulationData.algorithm}`,
+            `http://localhost:5000/api/schedule/${endpoint}`,
 
-            simulationData
+            requestData
 
           );
 
-        // Store result
+
+
+        // ================= STORE RESULT =================
 
         setResult(response.data);
 
@@ -100,7 +167,10 @@ const Home = () => {
 
         console.log(err);
 
+        console.log(err.response?.data);
+
         setError(
+          err.response?.data?.message ||
           "Failed to run simulation"
         );
 
@@ -114,7 +184,9 @@ const Home = () => {
 
     };
 
-  
+
+
+  // ================= COMPARE ALGORITHMS =================
 
   const compareAlgorithms =
     async () => {
@@ -136,7 +208,7 @@ const Home = () => {
               processes:
                 processData,
 
-              timeQuantum:
+              quantum:
                 timeQuantum
             }
 
@@ -170,52 +242,65 @@ const Home = () => {
 
     };
 
-  
+
+
+  // ================= LIVE SIMULATION =================
 
   const startLiveSimulation =
-    () => {
+  () => {
 
-      if (
-        processData.length === 0
-      ) {
+    if (
+      processData.length === 0
+    ) {
 
-        alert(
-          "Please run simulation first"
-        );
+      alert(
+        "Please run simulation first"
+      );
 
-        return;
+      return;
 
-      }
+    }
 
-      navigate(
-        "/live-simulation",
+    console.log(
+      "Algorithm Before Navigation:",
+      algorithm
+    );
 
-        {
+    console.log(
+      "Process Data:",
+      processData
+    );
 
-          state: {
+    navigate(
 
-            algorithm,
+      "/live-simulation",
 
-            processes:
-              processData,
+      {
 
-            timeQuantum
+        state: {
 
-          }
+          algorithm,
+
+          processes:
+            processData,
+
+          timeQuantum
 
         }
 
-      );
+      }
 
-    };
+    );
 
-  
+  };
+
+  // ================= UI =================
 
   return (
 
     <div className="home">
 
-      
+      {/* NAVBAR */}
 
       <div className="navbar">
 
@@ -227,6 +312,9 @@ const Home = () => {
 
       </div>
 
+
+
+      {/* HERO */}
 
       <div className="hero">
 
@@ -248,38 +336,57 @@ const Home = () => {
 
       </div>
 
-     
+
+
+      {/* MAIN CONTAINER */}
 
       <div className="main-container">
 
 
+
+        {/* LEFT PANEL */}
+
         <div className="left-panel">
+
+
 
           {/* Algorithm Selector */}
 
           <div className="card">
 
             <AlgorithmSelector
+
               algorithm={algorithm}
+
               setAlgorithm={setAlgorithm}
+             
+
             />
+            
 
           </div>
+
+ 
 
           {/* Process Form */}
 
           <div className="card">
 
             <ProcessForm
+
               algorithm={algorithm}
+
               onSimulate={
                 handleSimulation
               }
+
             />
 
           </div>
 
-          {/* RR Settings */}
+
+
+          {/* RR SETTINGS */}
 
           {
             processData.length > 0 && (
@@ -326,7 +433,9 @@ const Home = () => {
             )
           }
 
-          {/* Compare Button */}
+
+
+          {/* COMPARE BUTTON */}
 
           {
             processData.length > 0 && (
@@ -334,11 +443,13 @@ const Home = () => {
               <div className="compare-section">
 
                 <button
+
                   className="compare-btn"
 
                   onClick={
                     compareAlgorithms
                   }
+
                 >
 
                   Compare Algorithms
@@ -352,11 +463,15 @@ const Home = () => {
 
         </div>
 
-        
+
+
+        {/* RIGHT PANEL */}
 
         <div className="right-panel">
 
-          {/* Loading */}
+
+
+          {/* LOADING */}
 
           {
             loading && (
@@ -370,7 +485,9 @@ const Home = () => {
             )
           }
 
-          {/* Error */}
+
+
+          {/* ERROR */}
 
           {
             error && (
@@ -385,12 +502,15 @@ const Home = () => {
           }
 
 
+
+          {/* RESULT */}
+
           {
             result && (
 
               <>
 
-                {/* Metrics */}
+                {/* Metrics Table */}
 
                 <div className="card">
 
@@ -400,19 +520,25 @@ const Home = () => {
 
                 </div>
 
+
+
                 {/* Gantt Chart */}
 
                 <div className="card">
 
                   <GanttChart
+
                     gantt={
                       result.ganttChart
                     }
+
                   />
 
                 </div>
 
-                {/* Live Simulation */}
+
+
+                {/* LIVE BUTTON */}
 
                 <div className="live-btn-container">
 
@@ -437,7 +563,9 @@ const Home = () => {
             )
           }
 
-          
+
+
+          {/* COMPARISON RESULT */}
 
           {
             comparisonResult && (
@@ -461,6 +589,8 @@ const Home = () => {
                   />
 
                 </div>
+
+
 
                 {/* Comparison Chart */}
 
