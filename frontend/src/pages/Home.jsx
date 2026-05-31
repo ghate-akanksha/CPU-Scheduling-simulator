@@ -140,13 +140,10 @@ const endpoint =
         
 
         const response =
-          await axios.post(
-
-            `http://localhost:5000/api/schedule/${endpoint}`,
-
-            requestData
-
-          );
+         await axios.post(
+  `https://cpu-scheduling-simulator-wr9a.onrender.com/api/schedule/${endpoint}`,
+  requestData
+);
 
 
         setResult(response.data);
@@ -187,19 +184,15 @@ const endpoint =
         setComparisonResult(null);
 
         const response =
-          await axios.post(
+         await axios.post(
+  "https://cpu-scheduling-simulator-wr9a.onrender.com/api/schedule/compare",
+  {
+    processes: processData,
+    quantum: timeQuantum
+  }
+);
 
-            "http://localhost:5000/api/schedule/compare",
-
-            {
-              processes:
-                processData,
-
-              quantum:
-                timeQuantum
-            }
-
-          );
+          
 
         setComparisonResult(
           response.data.comparisons
