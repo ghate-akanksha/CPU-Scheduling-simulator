@@ -18,7 +18,7 @@ function fcfs(processes) {
       throw new Error(`Invalid burst time for process ${pid}`);
     }
 
-    // CPU idle time handling
+    // CPU idle 
     if (currentTime < arrivalTime) {
       ganttChart.push({
         pid: "IDLE",

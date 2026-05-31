@@ -52,13 +52,11 @@ const ComparisonChart = ({
 
           <Legend />
 
-          {/* Avg Waiting Time */}
 
           <Bar
             dataKey="avgWaitingTime"
           />
 
-          {/* Avg Turnaround Time */}
 
           <Bar
             dataKey="avgTurnaroundTime"

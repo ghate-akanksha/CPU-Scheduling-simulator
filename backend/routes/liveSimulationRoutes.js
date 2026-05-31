@@ -11,9 +11,7 @@ const {
 );
 
 
-// =====================================
-// UNIVERSAL LIVE SIMULATION ROUTE
-// =====================================
+
 
 router.post(
   "/simulate",

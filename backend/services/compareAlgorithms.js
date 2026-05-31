@@ -16,9 +16,7 @@ const priorityScheduling =
 const calculateAverage =
   require("../utils/calculateAverage");
 
-// =========================
-// COMPARE ALL ALGORITHMS
-// =========================
+
 
 function compareAlgorithms(
 
@@ -28,9 +26,7 @@ function compareAlgorithms(
 
 ) {
 
-  // =========================
-  // SAFETY CHECK
-  // =========================
+  
 
   if (
     !timeQuantum ||
@@ -41,9 +37,7 @@ function compareAlgorithms(
 
   }
 
-  // =========================
-  // RUN FCFS
-  // =========================
+  
 
   console.log("FCFS START");
 
@@ -52,9 +46,7 @@ function compareAlgorithms(
 
   console.log("FCFS DONE");
 
-  // =========================
-  // RUN SJF
-  // =========================
+  
 
   console.log("SJF START");
 
@@ -63,9 +55,7 @@ function compareAlgorithms(
 
   console.log("SJF DONE");
 
-  // =========================
-  // RUN SRJF
-  // =========================
+  
 
   console.log("SRJF START");
 
@@ -74,9 +64,7 @@ function compareAlgorithms(
 
   console.log("SRJF DONE");
 
-  // =========================
-  // RUN ROUND ROBIN
-  // =========================
+  
 
   console.log("RR START");
 
@@ -91,9 +79,7 @@ function compareAlgorithms(
 
   console.log("RR DONE");
 
-  // =========================
-  // RUN PRIORITY
-  // =========================
+  
 
   console.log("PRIORITY START");
 
@@ -104,9 +90,7 @@ function compareAlgorithms(
 
   console.log("PRIORITY DONE");
 
-  // =========================
-  // CALCULATE AVERAGES
-  // =========================
+ 
 
   const comparisons = [
 
@@ -154,9 +138,7 @@ function compareAlgorithms(
 
   ];
 
-  // =========================
-  // FIND BEST ALGORITHM
-  // =========================
+  
 
   let bestAlgorithm =
     comparisons[0];
@@ -181,9 +163,7 @@ function compareAlgorithms(
 
   });
 
-  // =========================
-  // RETURN FINAL RESULT
-  // =========================
+  
 
   return {
 
@@ -196,9 +176,7 @@ function compareAlgorithms(
 
 }
 
-// =========================
-// EXPORT MODULE
-// =========================
+
 
 module.exports =
   compareAlgorithms;

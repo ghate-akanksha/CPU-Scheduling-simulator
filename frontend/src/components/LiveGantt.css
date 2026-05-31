@@ -25,7 +25,7 @@
   border: 1px solid #1e293b;
 }
 
-/* Hide scrollbar (optional clean UI) */
+
 .gantt-chart::-webkit-scrollbar {
   height: 6px;
 }
@@ -35,7 +35,7 @@
   border-radius: 10px;
 }
 
-/* Gantt block */
+
 .gantt-block {
   background: #2563eb;
   color: #e2e8f0;
@@ -52,14 +52,14 @@
   transform: scale(1.05);
 }
 
-/* Process name */
+
 .gantt-block h3 {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
 }
 
-/* Time range */
+
 .gantt-block p {
   margin: 4px 0 0;
   font-size: 12px;

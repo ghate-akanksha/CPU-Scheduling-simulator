@@ -13,7 +13,7 @@ const rrLive =
 const priorityLive =
   require("../liveSimulation/priorityLive");
 
-// ================= ALGORITHM MAP =================
+
 
 const algorithmMap = {
 
@@ -31,7 +31,7 @@ const algorithmMap = {
 
 };
 
-// ================= MAIN ENGINE =================
+
 
 const runSimulation = (
   algorithm,
@@ -78,7 +78,6 @@ const runSimulation = (
 
   }
 
-  // OTHER ALGORITHMS
 
   return simulator(
     data.processes

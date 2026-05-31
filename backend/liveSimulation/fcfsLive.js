@@ -128,7 +128,7 @@ function fcfsLive(processes) {
 
     }
 
-    // Mark process complete
+    
 
     remainingTimes[i] = 0;
 

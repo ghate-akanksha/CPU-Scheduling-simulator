@@ -17,7 +17,7 @@ const simulate = (req, res) => {
       quantum
     } = req.body;
 
-    // ================= VALIDATION =================
+    
 
     if (!algorithm) {
 
@@ -45,7 +45,7 @@ const simulate = (req, res) => {
 
     }
 
-    // ================= ALGORITHM NORMALIZATION =================
+    
 
     algorithm =
       algorithm.toLowerCase();
@@ -82,7 +82,7 @@ const simulate = (req, res) => {
 
     }
 
-    // ================= QUANTUM =================
+    
 
     const rrQuantum =
       Number(
@@ -96,7 +96,7 @@ const simulate = (req, res) => {
       algorithm
     );
 
-    // ================= RUN ENGINE =================
+    
 
     const result =
       runSimulation(

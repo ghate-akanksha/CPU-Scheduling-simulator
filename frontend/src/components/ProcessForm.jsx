@@ -10,17 +10,17 @@ const ProcessForm = ({
   const [processes, setProcesses] =
     useState([]);
 
-  // Selected Scheduling Algorithm
+ 
   const [selectedAlgorithm,
     setSelectedAlgorithm] =
     useState("fcfs");
 
-  // Time Quantum for Round Robin
+  
   const [timeQuantum,
     setTimeQuantum] =
     useState("");
 
-  // Single Process State
+  
   const [process, setProcess] =
     useState({
       pid: "",
@@ -29,9 +29,7 @@ const ProcessForm = ({
       priority: ""
     });
 
-  // =========================
-  // HANDLE INPUT CHANGE
-  // =========================
+  
 
   const handleChange = (e) => {
 
@@ -50,7 +48,7 @@ const ProcessForm = ({
 
   const addProcess = () => {
 
-    // Basic Validation
+    
     if (
       process.pid === "" ||
       process.arrivalTime === "" ||
@@ -65,7 +63,7 @@ const ProcessForm = ({
 
     }
 
-    // Priority Validation
+    
     if (
       selectedAlgorithm ===
         "priority" &&
@@ -80,7 +78,7 @@ const ProcessForm = ({
 
     }
 
-    // Create New Process Object
+    
     const newProcess = {
 
       pid: process.pid,
@@ -91,8 +89,6 @@ const ProcessForm = ({
       burstTime:
         Number(process.burstTime),
 
-      // Add priority only for
-      // Priority Scheduling
 
       ...(selectedAlgorithm ===
         "priority" && {
@@ -104,7 +100,7 @@ const ProcessForm = ({
 
     };
 
-    // Add process to array
+    
     setProcesses([
       ...processes,
       newProcess
@@ -122,9 +118,7 @@ const ProcessForm = ({
 
   };
 
-  // =========================
-  // DELETE PROCESS
-  // =========================
+ 
 
   const deleteProcess = (index) => {
 
@@ -150,7 +144,7 @@ const ProcessForm = ({
 
     }
 
-    // Round Robin Validation
+   
     if (
       selectedAlgorithm ===
         "rr" &&
@@ -165,7 +159,7 @@ const ProcessForm = ({
 
     }
 
-    // Send Data to Parent Component
+    
     onSimulate({
 
       algorithm:
@@ -357,7 +351,7 @@ const ProcessForm = ({
                     Burst
                   </th>
 
-                  {/* Dynamic Priority Column */}
+                  
 
                   {
                     selectedAlgorithm ===
@@ -402,7 +396,7 @@ const ProcessForm = ({
                           }
                         </td>
 
-                        {/* Dynamic Priority Data */}
+                        
 
                         {
                           selectedAlgorithm ===

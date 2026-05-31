@@ -10,7 +10,7 @@ const liveSimulationRoutes =
     "./routes/liveSimulationRoutes"
   );
 
-// ================= MIDDLEWARE =================
+
 app.use(cors());
 app.use(express.json());
 
@@ -18,11 +18,11 @@ app.use(
   "/api/live",
   liveSimulationRoutes
 );
-// ================= ROUTES =================
+
 app.use("/api/schedule", scheduleRoutes);
 
 
-// ================= HEALTH CHECK =================
+
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 });
 
 
-// ================= 404 HANDLER =================
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -40,7 +40,7 @@ app.use((req, res) => {
 });
 
 
-// ================= GLOBAL ERROR HANDLER =================
+
 app.use((err, req, res, next) => {
   console.error("Error:", err.message);
 
@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
 });
 
 
-// ================= SERVER START =================
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

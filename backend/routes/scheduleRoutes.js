@@ -1,26 +1,26 @@
 const express = require("express");
 const router = express.Router();
 
-// Import FCFS algorithm
+
 const fcfs = require("../algorithms/fcfs");
 
-// Import SJF algorithm
+
 const sjf = require("../algorithms/sjf");
 
-// Import SRJF algorithm 
+
 const srjf = require("../algorithms/srjf");
 
-// import round robin algorithm
+
 const roundRobin = require("../algorithms/roundRobin");
 
-// import  priority scheduling algorithm
+
 const priorityScheduling = require("../algorithms/priorityScheduling");
-// import compare algorithms
+
 const compareAlgorithms =
   require("../services/compareAlgorithms");
 
 
-// ================= FCFS =================
+
 router.post("/fcfs", (req, res) => {
   try {
     const { processes } = req.body;
@@ -50,7 +50,7 @@ router.post("/fcfs", (req, res) => {
 });
 
 
-// ================= SJF =================
+
 router.post("/sjf", (req, res) => {
   try {
     const { processes } = req.body;
@@ -80,7 +80,7 @@ router.post("/sjf", (req, res) => {
 });
 
 
-// ================= SRJF (SRTF) =================
+
 router.post("/srjf", (req, res) => {
 
   try {
@@ -235,7 +235,7 @@ router.post(
 
 );
 
-// ================= ROUND ROBIN =================
+
 router.post("/rr", (req, res) => {
 
   try {

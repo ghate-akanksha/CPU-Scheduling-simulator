@@ -44,10 +44,6 @@ const Home = () => {
     setTimeQuantum] =
     useState(2);
 
-
-
-  // ================= RUN SIMULATION =================
-
   const handleSimulation =
     async (simulationData) => {
 
@@ -59,7 +55,7 @@ const Home = () => {
 
         setResult(null);
 
-        // STORE PROCESS DATA
+        
         setProcessData(
           simulationData.processes
         );
@@ -68,7 +64,7 @@ const Home = () => {
   simulationData.algorithm
 );
 
-        // STORE TIME QUANTUM
+        
         if (
           simulationData.timeQuantum
         ) {
@@ -79,7 +75,6 @@ const Home = () => {
 
         }
 
-        // ================= ROUTE MAP =================
 
         const routeMap = {
 
@@ -110,8 +105,6 @@ const endpoint =
   ] || "fcfs";
 
 
-        // ================= REQUEST DATA =================
-
         const requestData = {
 
           processes:
@@ -121,7 +114,7 @@ const endpoint =
 
 
 
-        // RR NEEDS QUANTUM
+        
         if (endpoint === "rr") {
 
           requestData.quantum =
@@ -134,7 +127,7 @@ const endpoint =
 
 
 
-        // PRIORITY NEEDS PRIORITY FIELD
+       
         if (endpoint === "priority") {
 
           requestData.processes =
@@ -144,7 +137,7 @@ const endpoint =
 
 
 
-        // ================= API CALL =================
+        
 
         const response =
           await axios.post(
@@ -155,9 +148,6 @@ const endpoint =
 
           );
 
-
-
-        // ================= STORE RESULT =================
 
         setResult(response.data);
 
@@ -184,9 +174,6 @@ const endpoint =
 
     };
 
-
-
-  // ================= COMPARE ALGORITHMS =================
 
   const compareAlgorithms =
     async () => {
@@ -243,9 +230,6 @@ const endpoint =
     };
 
 
-
-  // ================= LIVE SIMULATION =================
-
   const startLiveSimulation =
   () => {
 
@@ -294,8 +278,6 @@ const endpoint =
 
   };
 
-  // ================= UI =================
-
   return (
 
     <div className="home">
@@ -338,19 +320,12 @@ const endpoint =
 
 
 
-      {/* MAIN CONTAINER */}
 
       <div className="main-container">
 
 
-
-        {/* LEFT PANEL */}
-
         <div className="left-panel">
 
-
-
-          {/* Algorithm Selector */}
 
           <div className="card">
 

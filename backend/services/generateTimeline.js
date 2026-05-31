@@ -1,6 +1,4 @@
-// =========================
-// CREATE LIVE TIMELINE
-// =========================
+
 
 function createLiveTimeline(
   ganttChart
@@ -8,12 +6,12 @@ function createLiveTimeline(
 
   let timeline = [];
 
-  // Loop through all gantt blocks
+ 
 
   ganttChart.forEach(
     (block) => {
 
-      // Add each second separately
+      
 
       for (
 
