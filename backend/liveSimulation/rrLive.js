@@ -1,255 +1,111 @@
-function rrLive(
-  processes,
-  timeQuantum
-) {
-
+function rrLive(processes, timeQuantum) {
   const timeline = [];
 
+  const sorted = [...processes].sort(
+    (a, b) => a.arrivalTime - b.arrivalTime
+  );
+
+  const n = sorted.length;
+
   let currentTime = 0;
-
-  const n = processes.length;
-
-  const queue = [];
-
-  const visited =
-    new Array(n).fill(false);
-
-  const remainingTime =
-    processes.map(
-      p => p.burstTime
-    );
-
   let completed = 0;
 
-  while (
-    completed < n
-  ) {
+  const queue = [];
+  const visited = new Array(n).fill(false);
 
-    // Add arrived processes
+  const remainingTime = sorted.map(
+    p => p.burstTime
+  );
 
-    for (
-      let i = 0;
-      i < n;
-      i++
-    ) {
-
+  function addArrivals() {
+    for (let i = 0; i < n; i++) {
       if (
-
         !visited[i] &&
-
-        processes[i].arrivalTime <=
-          currentTime
-
+        sorted[i].arrivalTime <= currentTime
       ) {
-
         queue.push(i);
-
         visited[i] = true;
-
       }
-
     }
+  }
 
-    // CPU IDLE
+  addArrivals();
 
-    if (
-      queue.length === 0
-    ) {
-
+  while (completed < n) {
+    if (queue.length === 0) {
       timeline.push({
-
         time: currentTime,
-
         running: "IDLE",
-
         readyQueue: [],
-
-        completed:
-
-          processes
-
-            .filter(
-              (p, i) =>
-                remainingTime[i] === 0
-            )
-
-            .map(
-              p => p.pid
-            ),
-
-        remainingTimes:
-
-          Object.fromEntries(
-
-            processes.map(
-              (p, i) => [
-
-                p.pid,
-
-                remainingTime[i]
-
-              ]
-            )
-
-          )
-
+        completed: sorted
+          .filter((p, i) => remainingTime[i] === 0)
+          .map(p => p.pid),
+        remainingTimes: Object.fromEntries(
+          sorted.map((p, i) => [
+            p.pid,
+            remainingTime[i]
+          ])
+        )
       });
 
       currentTime++;
 
-      continue;
+      addArrivals();
 
+      continue;
     }
 
-    const idx =
-      queue.shift();
+    const idx = queue.shift();
 
-    const executeTime =
-      Math.min(
+    const executeTime = Math.min(
+      timeQuantum,
+      remainingTime[idx]
+    );
 
-        timeQuantum,
-
-        remainingTime[idx]
-
-      );
-
-    for (
-      let t = 0;
-      t < executeTime;
-      t++
-    ) {
-
-      // New arrivals
-
-      for (
-        let i = 0;
-        i < n;
-        i++
-      ) {
-
-        if (
-
-          !visited[i] &&
-
-          processes[i].arrivalTime <=
-            currentTime
-
-        ) {
-
-          queue.push(i);
-
-          visited[i] = true;
-
-        }
-
-      }
-
+    for (let t = 0; t < executeTime; t++) {
       timeline.push({
-
         time: currentTime,
-
-        running:
-          processes[idx].pid,
-
-        readyQueue:
-
-          queue.map(
-            i =>
-              processes[i].pid
-          ),
-
-        completed:
-
-          processes
-
-            .filter(
-              (p, i) =>
-                remainingTime[i] === 0
-            )
-
-            .map(
-              p => p.pid
-            ),
-
-        remainingTimes:
-
-          Object.fromEntries(
-
-            processes.map(
-              (p, i) => [
-
-                p.pid,
-
-                remainingTime[i]
-
-              ]
-            )
-
-          )
-
+        running: sorted[idx].pid,
+        readyQueue: queue.map(
+          i => sorted[i].pid
+        ),
+        completed: sorted
+          .filter((p, i) => remainingTime[i] === 0)
+          .map(p => p.pid),
+        remainingTimes: Object.fromEntries(
+          sorted.map((p, i) => [
+            p.pid,
+            remainingTime[i]
+          ])
+        )
       });
 
       remainingTime[idx]--;
-
       currentTime++;
 
+      addArrivals();
     }
 
-    if (
-      remainingTime[idx] > 0
-    ) {
-
+    if (remainingTime[idx] > 0) {
       queue.push(idx);
-
-    }
-
-    else {
-
-      remainingTime[idx] = 0;
-
+    } else {
       completed++;
-
     }
-
   }
 
-  // FINAL IDLE STATE
-
   timeline.push({
-
     time: currentTime,
-
     running: "IDLE",
-
     readyQueue: [],
-
-    completed:
-
-      processes.map(
-        p => p.pid
-      ),
-
-    remainingTimes:
-
-      Object.fromEntries(
-
-        processes.map(
-          p => [
-
-            p.pid,
-
-            0
-
-          ]
-        )
-
-      )
-
+    completed: sorted.map(
+      p => p.pid
+    ),
+    remainingTimes: Object.fromEntries(
+      sorted.map(p => [p.pid, 0])
+    )
   });
 
   return timeline;
-
 }
 
-module.exports =
-  rrLive;
+module.exports = rrLive;

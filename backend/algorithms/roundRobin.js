@@ -1,68 +1,39 @@
 function roundRobin(processes, quantum) {
-  let n = processes.length;
-  let currentTime = 0;
+  const sorted = [...processes].sort((a, b) => a.arrivalTime - b.arrivalTime);
+  const n = sorted.length;
 
+  let currentTime = 0;
+  let completed = 0;
   let queue = [];
   let result = [];
   let ganttChart = [];
 
-  let remainingTime = processes.map(p => p.burstTime);
-  let completed = 0;
+  let remainingTime = sorted.map(p => p.burstTime);
+  let i = 0; // pointer for arrivals
 
-  let visited = new Array(n).fill(false);
-
-  // IMPORTANT: do NOT mutate original input
-  let sorted = [...processes].sort(
-    (a, b) => a.arrivalTime - b.arrivalTime
-  );
-
-  // helper: add newly arrived processes
   function addArrivals() {
-    for (let i = 0; i < n; i++) {
-      if (
-        !visited[i] &&
-        sorted[i].arrivalTime <= currentTime
-      ) {
-        queue.push(i);
-        visited[i] = true;
-      }
+    while (i < n && sorted[i].arrivalTime <= currentTime) {
+      queue.push(i);
+      i++;
     }
   }
 
   addArrivals();
 
   while (completed < n) {
+
     if (queue.length === 0) {
-      // jump to next arrival (FIXED IDLE HANDLING)
-      let nextArrival = Infinity;
-
-      for (let i = 0; i < n; i++) {
-        if (!visited[i]) {
-          nextArrival = Math.min(
-            nextArrival,
-            sorted[i].arrivalTime
-          );
-        }
-      }
-
-      ganttChart.push({
-        pid: "IDLE",
-        startTime: currentTime,
-        endTime: nextArrival
-      });
-
-      currentTime = nextArrival;
+      currentTime = sorted[i].arrivalTime;
       addArrivals();
       continue;
     }
 
-    let idx = queue.shift();
-    let process = sorted[idx];
+    const idx = queue.shift();
+    const process = sorted[idx];
 
-    let startTime = currentTime;
+    const execTime = Math.min(quantum, remainingTime[idx]);
 
-    let execTime = Math.min(quantum, remainingTime[idx]);
-
+    const startTime = currentTime;
     currentTime += execTime;
     remainingTime[idx] -= execTime;
 
@@ -79,20 +50,17 @@ function roundRobin(processes, quantum) {
     } else {
       completed++;
 
-      let completionTime = currentTime;
-      let turnaroundTime =
-        completionTime - process.arrivalTime;
-
-      let waitingTime =
-        turnaroundTime - process.burstTime;
+      const completionTime = currentTime;
+      const tat = completionTime - process.arrivalTime;
+      const wt = tat - process.burstTime;
 
       result.push({
         pid: process.pid,
         arrivalTime: process.arrivalTime,
         burstTime: process.burstTime,
         completionTime,
-        turnaroundTime,
-        waitingTime
+        turnaroundTime: tat,
+        waitingTime: wt
       });
     }
   }
