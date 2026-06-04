@@ -48,46 +48,46 @@ export default function LiveSimulation() {
 
   useEffect(() => {
 
-  if (!algorithm || !processes) {
-    navigate("/");
-    return;
-  }
+    if (!algorithm || !processes) {
+      navigate("/");
+      return;
+    }
 
-  fetchTimeline();
+    fetchTimeline();
 
-}, [
-  algorithm,
-  processes,
-  timeQuantum
-]);
+  }, [
+    algorithm,
+    processes,
+    timeQuantum
+  ]);
 
- const fetchTimeline = async () => {
+  const fetchTimeline = async () => {
 
-  try {
+    try {
 
-    setLoading(true);
-    setError("");
+      setLoading(true);
+      setError("");
 
-    setTimeline([]);
-    setCurrentIndex(0);
+      setTimeline([]);
+      setCurrentIndex(0);
 
-    const data =
-      await fetchSimulation({
+      const data =
+        await fetchSimulation({
 
-        algorithm,
-        processes,
-        timeQuantum
+          algorithm,
+          processes,
+          timeQuantum
 
-      });
+        });
 
-    console.log(
-      "Timeline Data:",
-      data
-    );
+      console.log(
+        "Timeline Data:",
+        data
+      );
 
-    setTimeline(data);
+      setTimeline(data);
 
-  }
+    }
 
     catch (error) {
 
@@ -138,21 +138,23 @@ export default function LiveSimulation() {
     speed
 
   ]);
-useEffect(() => {
 
-  if (
-    currentIndex >=
-    timeline.length - 1
-  ) {
+  useEffect(() => {
 
-    setIsPlaying(false);
+    if (
+      currentIndex >=
+      timeline.length - 1
+    ) {
 
-  }
+      setIsPlaying(false);
 
-}, [
-  currentIndex,
-  timeline.length
-]);
+    }
+
+  }, [
+    currentIndex,
+    timeline.length
+  ]);
+
   const nextStep = () => {
 
     if (
@@ -193,14 +195,23 @@ useEffect(() => {
 
       <div className="hero-section">
 
+        <div className="top-bar">
+
+          <button
+            className="back-btn"
+            onClick={() => navigate("/")}
+          >
+            ← Back to Home
+          </button>
+
+        </div>
+
         <h1 className="main-title">
           CPU Scheduling Simulator
         </h1>
 
         <div className="algorithm-badge">
-
           {algorithm?.toUpperCase()}
-
         </div>
 
       </div>

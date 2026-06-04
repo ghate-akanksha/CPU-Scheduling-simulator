@@ -101,3 +101,19 @@ body {
   }
 
 }
+
+.back-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 15px;
+  background: #2563eb;
+  color: white;
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  opacity: 0.9;
+}
