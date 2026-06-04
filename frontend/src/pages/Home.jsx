@@ -11,7 +11,9 @@ import MetricsTable from "../components/MetricsTable";
 import GanttChart from "../components/GanttChart";
 import ComparisonTable from "../components/ComparisonTable";
 import ComparisonChart from "../components/ComparisonChart";
-
+const API =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000";
 const Home = () => {
 
   const navigate = useNavigate();
@@ -141,7 +143,7 @@ const endpoint =
 
         const response =
          await axios.post(
-  `https://cpu-scheduling-simulator-wr9a.onrender.com/api/schedule/${endpoint}`,
+  `${API}/api/schedule/${endpoint}`,
   requestData
 );
 
@@ -185,7 +187,7 @@ const endpoint =
 
         const response =
          await axios.post(
-  "https://cpu-scheduling-simulator-wr9a.onrender.com/api/schedule/compare",
+  `${API}/api/schedule/compare`,
   {
     processes: processData,
     quantum: timeQuantum
